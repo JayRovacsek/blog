@@ -3,7 +3,7 @@ pkgs.mkShell {
   name = "blog shell";
   buildInputs = with pkgs; [ git zola nixfmt statix ];
   shellHook = ''
-    git pull --recurse-submodules
+    git submodule update --init
     zola serve --port 8080
   '';
 }
