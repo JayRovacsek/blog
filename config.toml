@@ -4,7 +4,6 @@ compile_sass = true
 build_search_index = true
 
 taxonomies = [
-    {name = "categories", feed = true},
     {name = "tags", feed = true},
 ]
 
@@ -13,7 +12,6 @@ highlight_code = true
 
 [extra]
 after_dark_menu = [
-    {url = "$BASE_URL", name = "Home"},
-    {url = "$BASE_URL/categories", name = "Categories"},
-    {url = "$BASE_URL/tags", name = "Tags"},
+    {url = "$BASE_URL", name = "home"},
+    {url = "$BASE_URL/tags", name = "tags"},
 ]
