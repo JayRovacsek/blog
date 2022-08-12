@@ -2,6 +2,7 @@ base_url = "https://jayrovacsek.github.io/blog"
 theme = "after-dark"
 compile_sass = true
 build_search_index = true
+hard_link_static = true
 
 taxonomies = [
     {name = "tags", feed = true},
