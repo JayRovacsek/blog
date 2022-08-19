@@ -123,6 +123,6 @@ As for the awesome artwork DALL-E 2 is generating, a friend generated a token's 
 images for me to utilise that pretty much has me sold on getting onto using it for
 slick images here. All images but the docker logo on this page are thanks to this
 
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.45.59 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
 &nbsp;
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.07 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
