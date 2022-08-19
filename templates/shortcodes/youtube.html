@@ -1,0 +1,6 @@
+<div {% if class %}class="{{class}}" {% endif %} style="width: 100% !important; height: 500px !important;">
+    <iframe style="height:100% !important; width:100% !important;"
+        src="https://www.youtube.com/embed/{{id}}{% if autoplay %}?autoplay=1{% endif %}" webkitallowfullscreen
+        mozallowfullscreen allowfullscreen>
+    </iframe>
+</div>
