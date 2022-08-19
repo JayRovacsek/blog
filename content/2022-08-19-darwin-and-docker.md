@@ -5,25 +5,27 @@ date = 2022-08-19
 tags = ["nix","docker","nix-darwin","launchd"]
 +++
 
+{{ resize_image(path="../static/images/docker.png", width=500 height=500 op="fit") }}
+
 Docker is a pretty industry prolific tool that gives users the ability to 
 be repeatable across environments pretty easily. It's highly ergonomic once setup
 and easy to rationalise with what and how it's doing things once you've skimmed the 
 basic settings, ran a `hello-world` and dipped your toes in proverbial pools.
-
-![docker](/blog/images/docker.png)
 
 Recently docker made a shift in the ability to use docker desktop for free when it comes to
 organisations - this freemium style model is... great! Yep - I'm not going to suggest docker
 should continue propping up large businesses with free work produced by awesome people,
 it deserves to be a paid product for the polish applied in both docker desktop and 
 dockerhub. While I'd still be militantly against utilising a GUI for docker as `compose` really gives
-you the tools to manage more complex situations well, it is what it is.
+you the tools to manage more complex situations well, it is, what it is.
 
 I wanted to use docker on my work machines in a way that lets me both be repeatable and 
 repoducable in the output. You _could_ write a shell script that wraps the install of
 the docker client, creates a qemu guest, passes the required sock between guest and host then 
 you'd be off to the races. But this is both a serious rabbit-hole as well as not 
-repoducable by nature.
+repoducable by nature (unless you really put the effort in to make it).
+
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.45.55 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500  op="fit_width") }}
 
 Enter nix - on nixOS we've got `virtualisation.docker.enable` which is mint! Don't make 
 me think about how it's working under the hood and give the ability to use docker, like... pronto.
@@ -34,6 +36,8 @@ a linux kernel leading to some extra sauce being required to get everything goin
 and gives us a default of "hey - just run the dockers", it's available in a few different places
 but best of all: in `nixpkgs` meaning we can either pin or be certain of current version across
 any number of builds when using flakes.
+
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit_width") }}
 
 To ensure we can just use docker at any point I needed to use `launchd` units to manage the spin up
 of colima. There is some hackiness about the way that the launchd unit is defined, but seems like it
@@ -114,3 +118,11 @@ they come out with!
 
 Yep - I should/could probably create a pull request for the option to be upstream'd into nix-darwin but
 the imposter syndrome is real and my implementation of the service could probably be polished a bit.
+
+As for the awesome artwork DALL-E 2 is generating, a friend generated a token's worth of 
+images for me to utilise that pretty much has me sold on getting onto using it for
+slick images here. All images but the docker logo on this page are thanks to this
+
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
+&nbsp;
+{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
