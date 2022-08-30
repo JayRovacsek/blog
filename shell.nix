@@ -9,6 +9,7 @@ pkgs.mkShell {
     then
       echo "Port 8080 appears to be in use, not starting zola"  
     else
+      rm -rf ./public
       zola serve --port 8080
     fi
   '';
