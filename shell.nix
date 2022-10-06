@@ -1,7 +1,7 @@
 { pkgs ? import <nixpkgs> { } }:
 pkgs.mkShell {
   name = "blog shell";
-  buildInputs = with pkgs; [ git zola nixfmt statix ];
+  buildInputs = with pkgs; [ git zola nixfmt statix lsof ];
   shellHook = ''
     git submodule update --init
     port_used=$(lsof -i -P -n | grep LISTEN | grep 8080 | wc -l)
