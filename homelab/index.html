@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title></title>
+
+      
+
+      
+          <link rel="stylesheet" href="https://jayrovacsek.github.io/blog/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog">
+                                <span itemprop="name">home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;tags">
+                                <span itemprop="name">tags</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">nixos &amp; homelab reflections</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>6 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-08-12
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>At home I inflict a fair bit of tech on my family. This all started from inspiration from a 
+friend many years ago and continued to manifest while I was being sucked down a tech rabbit-hole
+at uni and then into my professional career.</p>
+<p>This endeavour has been great in helping me understand tech that I otherwise wouldn't have dug further 
+into:</p>
+<ul>
+<li>managing a router beyond your basic plug and play devices offered by ISPs</li>
+<li>managing firewalls to segment networks logically rather than physically</li>
+<li>setting up storage servers to hoard data</li>
+<li>managing DNS both to block unwanted connections but also ensure egress traffic from the network is secure rather than default </li>
+<li>containerisation</li>
+<li>security implications of tech choices</li>
+<li>etc</li>
+</ul>
+<p>The iterations of home-lab have been pretty stock standard thus far; </p>
+<ul>
+<li>Running all Windows compute and getting host to host connectivity going via shares </li>
+<li>Jumping to <a href="https://unraid.net/">Unraid</a> which simplified the management of storage on Linux initially as well as offering a nice graphical approach to docker which was on a very sharp upwards trend at the time (and still is).</li>
+<li>Trying the waters of solutions such as <a href="https://www.proxmox.com">Proxmox</a>, <a href="https://docs.vmware.com/en/VMware-vSphere/index.html">vSphere</a> and more - these are good solutions but didn't tickle the part of my brain it needed to.</li>
+<li>Going (mostly) all in on <a href="https://nixos.org/">NixOS</a></li>
+</ul>
+<p>The above greatly simplifies the journey in tech for my home-lab over the last close to decade now. 
+But I'm just spewing thought into text in order to punch that <code>git commit</code> 
+in before work.</p>
+<p>It seems homelabs are somewhat destined to become forever-jobs unless you put bounds on what you 
+want to do and the time you'll spend on it. This isn't bad unless you're time poor but
+does mean you mightn't have the time to journey into some nooks and crannies of tech such as BSD 
+jails vs docker vs chroot. This is fine because the time bounds play an important
+part of deciding what to use and it'll generally be best to keep to well trodden paths. Why bother 
+with jails if most of the industry is hailing docker/OCI as the reasonable path forward?</p>
+<p>Without the <code>I use NixOS btw</code> meme settling in too much, for homelab purposes I think the composability 
+of Nix is a huge win for time savings - you can still leverage common patterns 
+made by others in a pinch but also build/design your own if you're inclined. There's some magic that 
+exists in config-as-code that is certainly scratching that part of the brain I needed right now.</p>
+<p>As my career has centered around the identification and rating of risks associated with various technical 
+decisions or implementations the approach NixOS applies makes it far easier to reason with the system state
+than other solutions. </p>
+<p>There is a dark-side to this choice however and it's been teased out in a fair few blog
+posts by others recently and admitted by <a href="https://www.tweag.io">Tweag</a> that the ability to simply pickup and 
+run with the solution is <a href="https://www.tweag.io/blog/2022-08-04-tweag-and-nix-future/">not your run-of-the-mill system</a></p>
+<p>There are possible fixes for this beyond the suggestions made in <a href="https://www.tweag.io/blog/2022-08-04-tweag-and-nix-future/">the roadmap for nix by Tweag</a> as 
+well as the idea to <a href="https://www.tweag.io/blog/2022-03-11-nickel-first-release/">shift the language / offer alternatives</a> 
+to give a newcomer a better chance at understanding the design quickly. Currently the documentation for Nix is <em>okay</em>
+however more complex systems will require a good understanding of the language and mastery of the <a href="https://nixos.wiki/wiki/Nix_command/repl">repl</a> 
+which isn't a good argument to use the solution if the environment is anything beyond a homelab.
+Myself and a friend regularly laugh about a quote from Wesley Aptekar-Cassels in their blog post about this <a href="https://blog.wesleyac.com/posts/the-curse-of-nixos">The Curse of NixOS</a>:</p>
+<blockquote>
+<p>that requires configuration with the second-worst homegrown config programming language I've ever used</p>
+</blockquote>
+<p>The above is <em>too true</em> until a user has surmounted a learning curve that effectively mirrors that of:</p>
+<ul>
+<li>rust</li>
+<li>dwarf fortress</li>
+<li>eve-online (never played it, but have heard about as much plus the meme fits)</li>
+</ul>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;376213f31ffead1600.png" />
+<p> </p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;2c537e5e8c483db500.png" />
+<p> </p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;ff870c4a1ce58cb400.png" />
+<p>What's worth noting is that a fair number of Nix users host their configurations in open repositories
+to enable alternative parties to learn and leverage config use-cases and generally make life easier.
+For example while the <code>dockutil</code> package exists for darwin_x86_64; the options behind the package would
+assume a manual application of commands to get a config as desired. But by some quick searching on github or
+a search engine I was able to find an example of options applied by <a href="https://github.com/tboerger">tboerger</a>
+which enabled me to utilise an <a href="https://github.com/JayRovacsek/nix-config/blob/6645bc56bbcd29e1895516d893205655307aba15/options/dockutil/default.nix#L1">extremely similar setup</a></p>
+<p>The point still stands though that the language used here might be a barrier to new users; the example
+uses some abstractions of <code>with lib;</code> and a few other things that a new user won't be able to understand relatively 
+quickly and this makes me a :sadpanda:</p>
+<p>There is a flip side to this also which is part of the barrier here is the implications of most
+common learning pathways for people when it comes to programming: usually this goes;</p>
+<ul>
+<li>here's a language</li>
+<li>here's an if statement</li>
+<li>here's a loop</li>
+<li>here's an object</li>
+</ul>
+<p>Arguably the application of teaching generally not encompassing or favouring non-functional
+languages has meant that there's a significant asynchronousity of approachability when it comes to
+functional languages (such as nix) </p>
+<p>Functional language advocacy certainly fits into the easy to assume non-pragmatic lens being applied to
+proposed solutions but this is tainted by the above problem which is learning preferences for:</p>
+<pre data-lang="js" style="background-color:#2b303b;color:#c0c5ce;" class="language-js "><code class="language-js" data-lang="js"><span>  </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">original </span><span>= [</span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">2</span><span>,</span><span style="color:#d08770;">3</span><span>]
+</span><span>  </span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">result </span><span>= []
+</span><span>  </span><span style="color:#b48ead;">for </span><span>(</span><span style="color:#b48ead;">let </span><span style="color:#bf616a;">index </span><span>= </span><span style="color:#d08770;">0</span><span>; </span><span style="color:#bf616a;">index </span><span>&lt; </span><span style="color:#bf616a;">original</span><span>.length; </span><span style="color:#bf616a;">index</span><span>++) {
+</span><span>     </span><span style="color:#bf616a;">result</span><span>.</span><span style="color:#96b5b4;">push</span><span>(</span><span style="color:#bf616a;">original</span><span>[</span><span style="color:#bf616a;">index</span><span>] * </span><span style="color:#d08770;">2</span><span>)
+</span><span>  }
+</span></code></pre>
+<p>VS</p>
+<pre data-lang="js" style="background-color:#2b303b;color:#c0c5ce;" class="language-js "><code class="language-js" data-lang="js"><span>  </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">original </span><span>= [</span><span style="color:#d08770;">1</span><span>,</span><span style="color:#d08770;">2</span><span>,</span><span style="color:#d08770;">3</span><span>]
+</span><span>  </span><span style="color:#b48ead;">const </span><span style="color:#bf616a;">result </span><span>= </span><span style="color:#bf616a;">original</span><span>.</span><span style="color:#8fa1b3;">map</span><span>((</span><span style="color:#bf616a;">x</span><span>) </span><span style="color:#b48ead;">=&gt; </span><span style="color:#bf616a;">x </span><span>* </span><span style="color:#d08770;">2</span><span>)
+</span></code></pre>
+<p>The above both do the <em>same</em> thing yet the first example will be the intro to programming under a rationale
+that readability is increased - a fallacy driven by biases in the learning pathway the assessor takes also.</p>
+<p>There's an irony here though as this is being written by a person with biases also 🙂</p>
+<p>For now, chill with some Lonks, Zeldos and one-day the world might bend to our whims 😅</p>
+<div  style="width: 100% !important; height: 500px !important;">
+    <iframe style="height:100% !important; width:100% !important;"
+        src="https://www.youtube.com/embed/-z3RRwk2rdU" webkitallowfullscreen
+        mozallowfullscreen allowfullscreen>
+    </iframe>
+</div>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                
+                
+                    
+                    tagged
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/homelab/">homelab</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/linux/">linux</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/docker/">docker</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nixos/">nixos</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/unraid/">unraid</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/pfsense/">pfsense</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/rambling/">rambling</a>
+                        
+                            
+                                
+                                    and
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/functional/">functional</a>
+                        
+                            
+                        
+                    
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

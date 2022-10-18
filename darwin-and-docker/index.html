@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title></title>
+
+      
+
+      
+          <link rel="stylesheet" href="https://jayrovacsek.github.io/blog/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog">
+                                <span itemprop="name">home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;tags">
+                                <span itemprop="name">tags</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">nix + darwin + docker</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>5 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-08-19
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;a69e2a20acdeda8100.png" />
+<p>Docker is a pretty industry prolific tool that gives users the ability to 
+be repeatable across environments pretty easily. It's highly ergonomic once setup
+and easy to rationalise with what and how it's doing things once you've skimmed the 
+basic settings, ran a <code>hello-world</code> and dipped your toes in proverbial pools.</p>
+<p>Recently docker made a shift in the ability to use docker desktop for free when it comes to
+organisations - this freemium style model is... great! Yep - I'm not going to suggest docker
+should continue propping up large businesses with free work produced by awesome people,
+it deserves to be a paid product for the polish applied in both docker desktop and 
+dockerhub. While I'd still be militantly against utilising a GUI for docker as <code>compose</code> really gives
+you the tools to manage more complex situations well, it is, what it is.</p>
+<p>I wanted to use docker on my work machines in a way that lets me both be repeatable and 
+repoducable in the output. You <em>could</em> write a shell script that wraps the install of
+the docker client, creates a qemu guest, passes the required sock between guest and host then 
+you'd be off to the races. But this is both a serious rabbit-hole as well as not 
+repoducable by nature (unless you really put the effort in to make it).</p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;6901d3acdddd21c800.png" />
+<p>Enter nix - on nixOS we've got <code>virtualisation.docker.enable</code> which is mint! Don't make 
+me think about how it's working under the hood and give the ability to use docker, like... pronto.
+On darwin however the option for virtualisation doesn't exist. Not only this but we're not on
+a linux kernel leading to some extra sauce being required to get everything going.</p>
+<p><a href="https://github.com/abiosoft/colima">Colima</a> is an awesome project that seeks to wrap the complexity of creating a suitable VM
+and gives us a default of &quot;hey - just run the dockers&quot;, it's available in a few different places
+but best of all: in <code>nixpkgs</code> meaning we can either pin or be certain of current version across
+any number of builds when using flakes.</p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;2457be0103205b8b00.png" />
+<p>To ensure we can just use docker at any point I needed to use <code>launchd</code> units to manage the spin up
+of colima. There is some hackiness about the way that the launchd unit is defined, but seems like it
+catches the obvious edge-cases I encountered; I wrote a simple extension to options for darwin 
+(though testing if host system is darwin is an assertion I should include on this) and the end-result 
+came out as below:</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#8fa1b3;">{ </span><span>config, pkgs, lib, ... </span><span style="color:#8fa1b3;">}</span><span>:
+</span><span style="color:#b48ead;">let
+</span><span>  </span><span style="color:#d08770;">cfg </span><span>= </span><span style="color:#bf616a;">config</span><span>.</span><span style="color:#bf616a;">virtualisation</span><span>.</span><span style="color:#bf616a;">docker-darwin</span><span>;
+</span><span>  </span><span style="color:#d08770;">requiredPackages </span><span>= </span><span style="color:#b48ead;">with </span><span style="color:#bf616a;">pkgs</span><span>; [ </span><span style="color:#bf616a;">colima docker </span><span>];
+</span><span style="color:#b48ead;">in with </span><span style="color:#bf616a;">lib</span><span>; {
+</span><span>  </span><span style="color:#d08770;">options </span><span>= {
+</span><span>    </span><span style="color:#d08770;">virtualisation</span><span>.</span><span style="color:#d08770;">docker-darwin </span><span>= {
+</span><span>      </span><span style="color:#d08770;">enable </span><span>= </span><span style="color:#bf616a;">mkOption </span><span>{
+</span><span>        </span><span style="color:#d08770;">type </span><span>= </span><span style="color:#bf616a;">types</span><span>.</span><span style="color:#bf616a;">bool</span><span>;
+</span><span>        </span><span style="color:#d08770;">default </span><span>= </span><span style="color:#d08770;">false</span><span>;
+</span><span>        </span><span style="color:#d08770;">description </span><span>= </span><span style="color:#bf616a;">mdDoc </span><span>&#39;&#39;
+</span><span style="color:#a3be8c;">          This option enables docker on darwin, a daemon that manages
+</span><span style="color:#a3be8c;">          linux containers. Users can interact with
+</span><span style="color:#a3be8c;">          the daemon (e.g. to start or stop containers) using the
+</span><span style="color:#a3be8c;">          {command}`docker` command line tool.
+</span><span style="color:#a3be8c;">        </span><span>&#39;&#39;;
+</span><span>      };
+</span><span>      </span><span style="color:#d08770;">logFile </span><span>= </span><span style="color:#bf616a;">mkOption </span><span>{
+</span><span>        </span><span style="color:#d08770;">type </span><span>= </span><span style="color:#bf616a;">types</span><span>.</span><span style="color:#bf616a;">nullOr types</span><span>.</span><span style="color:#bf616a;">path</span><span>;
+</span><span>        </span><span style="color:#d08770;">default </span><span>= &quot;</span><span style="color:#a3be8c;">/tmp/docker-darwin.log</span><span>&quot;;
+</span><span>        </span><span style="color:#d08770;">example </span><span>= &quot;</span><span style="color:#a3be8c;">/var/log/docker-darwin.log</span><span>&quot;;
+</span><span>        </span><span style="color:#d08770;">description </span><span>= &#39;&#39;
+</span><span style="color:#a3be8c;">          The logfile to use for the docker service.
+</span><span style="color:#a3be8c;">        </span><span>&#39;&#39;;
+</span><span>      };
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#d08770;">config </span><span>= </span><span style="color:#bf616a;">mkIf cfg</span><span>.</span><span style="color:#bf616a;">enable </span><span>{
+</span><span>    </span><span style="color:#d08770;">environment</span><span>.</span><span style="color:#d08770;">systemPackages </span><span>= </span><span style="color:#bf616a;">requiredPackages</span><span>;
+</span><span>    </span><span style="color:#d08770;">launchd</span><span>.</span><span style="color:#d08770;">user</span><span>.</span><span style="color:#d08770;">agents</span><span>.</span><span style="color:#d08770;">docker </span><span>= {
+</span><span>
+</span><span>      </span><span style="color:#d08770;">path </span><span>= </span><span style="color:#bf616a;">requiredPackages </span><span>++ [ </span><span style="color:#bf616a;">config</span><span>.</span><span style="color:#bf616a;">environment</span><span>.</span><span style="color:#bf616a;">systemPath </span><span>];
+</span><span>
+</span><span>      </span><span style="color:#65737e;"># Script logic is:
+</span><span>      </span><span style="color:#65737e;"># check if docker ps gives a zero exit code, if not use `colima start`
+</span><span>      </span><span style="color:#65737e;"># but guard this also from unclean stops by assuming in another non
+</span><span>      </span><span style="color:#65737e;"># zero exit that a qemu host exists/is running but host side is borked
+</span><span>      </span><span style="color:#65737e;"># and pkill the pid if so.
+</span><span>
+</span><span>      </span><span style="color:#65737e;"># Then check colima status, if default (normal colima namespace with start)
+</span><span>      </span><span style="color:#65737e;"># has a non-zero exit (i.e not running) start it.
+</span><span>      </span><span style="color:#d08770;">script </span><span>= &#39;&#39;
+</span><span style="color:#a3be8c;">        </span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">pkgs</span><span style="font-style:italic;color:#c0c5ce;">.</span><span style="font-style:italic;color:#bf616a;">docker</span><span style="font-style:italic;color:#ab7967;">}</span><span style="color:#a3be8c;">/bin/docker ps -q || </span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">pkgs</span><span style="font-style:italic;color:#c0c5ce;">.</span><span style="font-style:italic;color:#bf616a;">colima</span><span style="font-style:italic;color:#ab7967;">}</span><span style="color:#a3be8c;">/bin/colima start || pkill -F ~/.lima/colima/qemu.pid 
+</span><span style="color:#a3be8c;">        </span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">pkgs</span><span style="font-style:italic;color:#c0c5ce;">.</span><span style="font-style:italic;color:#bf616a;">colima</span><span style="font-style:italic;color:#ab7967;">}</span><span style="color:#a3be8c;">/bin/colima status -p default || </span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">pkgs</span><span style="font-style:italic;color:#c0c5ce;">.</span><span style="font-style:italic;color:#bf616a;">colima</span><span style="font-style:italic;color:#ab7967;">}</span><span style="color:#a3be8c;">/bin/colima start default 
+</span><span style="color:#a3be8c;">      </span><span>&#39;&#39;;
+</span><span>
+</span><span>      </span><span style="color:#d08770;">serviceConfig </span><span>= {
+</span><span>        </span><span style="color:#d08770;">Label </span><span>= &quot;</span><span style="color:#a3be8c;">local.docker</span><span>&quot;;
+</span><span>        </span><span style="color:#d08770;">AbandonProcessGroup </span><span>= </span><span style="color:#d08770;">true</span><span>;
+</span><span>        </span><span style="color:#d08770;">RunAtLoad </span><span>= </span><span style="color:#d08770;">true</span><span>;
+</span><span>        </span><span style="color:#d08770;">ExitTimeOut </span><span>= </span><span style="color:#d08770;">0</span><span>;
+</span><span>        </span><span style="color:#d08770;">StandardOutPath </span><span>= </span><span style="color:#bf616a;">cfg</span><span>.</span><span style="color:#bf616a;">logFile</span><span>;
+</span><span>        </span><span style="color:#d08770;">StandardErrorPath </span><span>= </span><span style="color:#bf616a;">cfg</span><span>.</span><span style="color:#bf616a;">logFile</span><span>;
+</span><span>      };
+</span><span>    };
+</span><span>  };
+</span><span>}
+</span></code></pre>
+<p>The only real rough edge I came across was that launchd kills subprocesses once the parent process exits.
+Now this might just be not spending enough time reading all the options for launchd but the documentation
+of launchd <em>REALLY</em> sucks. The solve for this issue was to add <code>AbandonProcessGroup</code> to the 
+serviceConfig and launchd stopped killing and reloading docker until infinity.</p>
+<p>When <a href="https://www.tweag.io/blog/2022-08-04-tweag-and-nix-future/">Tweag recently posted the roadmap for nix</a>
+they mentioned ubiquity between linux &amp; darwin these kind of rough edges (docker requiring custom written
+options) are the kind of things that could really help in the adoption of nix, I'm keen to see what
+they come out with!</p>
+<p>Yep - I should/could probably create a pull request for the option to be upstream'd into nix-darwin but
+the imposter syndrome is real and my implementation of the service could probably be polished a bit.</p>
+<p>As for the awesome artwork DALL-E 2 is generating, a friend generated a token's worth of 
+images for me to utilise that pretty much has me sold on getting onto using it for
+slick images here. All images but the docker logo on this page are thanks to this</p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;bd476f0cc8b5c2ce00.png" />
+<p> </p>
+<img style="display: block; margin-left: auto; margin-right: auto; width: 100%;" src="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;processed_images&#x2F;16d7e16366acc1c200.png" />
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                
+                
+                    
+                    tagged
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nix/">nix</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/docker/">docker</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nix-darwin/">nix-darwin</a>
+                        
+                            
+                                
+                                    and
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/launchd/">launchd</a>
+                        
+                            
+                        
+                    
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

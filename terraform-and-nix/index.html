@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title></title>
+
+      
+
+      
+          <link rel="stylesheet" href="https://jayrovacsek.github.io/blog/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog">
+                                <span itemprop="name">home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;tags">
+                                <span itemprop="name">tags</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">terraform, nix, nixos and terranix</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>2 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-10-07
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>For various reasons I have a need to create cloud services in a simple, declarative and consistent way.
+The answer to this is clear depending on which cloud I am looking to use (spoilers; it's AWS for now) and
+generally that would be AWS CDK - a neat way to package everything I need (maybe except a single edge-case but
+that might just be a PBKAC issue)</p>
+<p>Then I got thinking about the deployment of organisations, as is recommended by everyone when it comes to 
+putting a clear delineation between development, production and root accounts to begin with and AWS accounts.
+I have only skimmed over the surface of setting this up thus far and would love to chase it up sometime over the next week or two but
+from a high level it looks like AWS organisations are going to be easy to setup with terraform.</p>
+<p>Looking at the requirements for state, we really want to store tfstate in a S3 bucket; which feels like a fair bit of a 
+chicken and egg situation: </p>
+<ul>
+<li>I want to deploy terraform to manage AWS infrastructure</li>
+<li>Terraform requires state - S3 or local (or others, but lets ignore that)</li>
+<li>S3 would require an S3 bucket - of which this should not live in a root account</li>
+<li>Non-root account requires organisation provisioned</li>
+</ul>
+<p>Yeah...</p>
+<p>Anyways; I suppose a local state that's migrated to S3 later could work; alternatively a hand-rolled development/deployer
+organisation that is later captured as state to enable the whole configuration to be represented.</p>
+<p>Moving away from just the deployment of org structures; I'm in love with the idea of defining a nixOS configuration,
+building an AMI then deploying to variable size instances with scheduled up/down rules to replace the by-hand
+CSGO server I'm currently running for work to be a wind-down activity on a Friday.</p>
+<p>This'll need to be proved out, but coupling a flake with the <a href="https://github.com/nix-community/nixos-generators">nixos generators</a>
+repository
+it seems dead easy to do so!</p>
+<p>Maybe there'll be a post in a few weeks from me lamenting the journey, or celebrating it's success! </p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                
+                
+                    
+                    tagged
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nix/">nix</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/iac/">iac</a>
+                        
+                            
+                                
+                                    and
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/terraform/">terraform</a>
+                        
+                            
+                        
+                    
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>

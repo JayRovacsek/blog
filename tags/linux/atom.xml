@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title> - linux</title>
+	<link href="https://jayrovacsek.github.io/blog/tags/linux/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://jayrovacsek.github.io/blog"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-08-12T00:00:00+00:00</updated>
+	<id>https://jayrovacsek.github.io/blog/tags/linux/atom.xml</id>
+	<entry xml:lang="en">
+		<title>nixos &amp; homelab reflections</title>
+		<published>2022-08-12T00:00:00+00:00</published>
+		<updated>2022-08-12T00:00:00+00:00</updated>
+		<link href="https://jayrovacsek.github.io/blog/homelab/" type="text/html"/>
+		<id>https://jayrovacsek.github.io/blog/homelab/</id>
+		<content type="html">&lt;p&gt;At home I inflict a fair bit of tech on my family. This all started from inspiration from a 
+friend many years ago and continued to manifest while I was being sucked down a tech rabbit-hole
+at uni and then into my professional career.&lt;&#x2F;p&gt;
+&lt;p&gt;This endeavour has been great in helping me understand tech that I otherwise wouldn&#x27;t have dug further 
+into:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;managing a router beyond your basic plug and play devices offered by ISPs&lt;&#x2F;li&gt;
+&lt;li&gt;managing firewalls to segment networks logically rather than physically&lt;&#x2F;li&gt;
+&lt;li&gt;setting up storage servers to hoard data&lt;&#x2F;li&gt;
+&lt;li&gt;managing DNS both to block unwanted connections but also ensure egress traffic from the network is secure rather than default &lt;&#x2F;li&gt;
+&lt;li&gt;containerisation&lt;&#x2F;li&gt;
+&lt;li&gt;security implications of tech choices&lt;&#x2F;li&gt;
+&lt;li&gt;etc&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The iterations of home-lab have been pretty stock standard thus far; &lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Running all Windows compute and getting host to host connectivity going via shares &lt;&#x2F;li&gt;
+&lt;li&gt;Jumping to &lt;a href=&quot;https:&#x2F;&#x2F;unraid.net&#x2F;&quot;&gt;Unraid&lt;&#x2F;a&gt; which simplified the management of storage on Linux initially as well as offering a nice graphical approach to docker which was on a very sharp upwards trend at the time (and still is).&lt;&#x2F;li&gt;
+&lt;li&gt;Trying the waters of solutions such as &lt;a href=&quot;https:&#x2F;&#x2F;www.proxmox.com&quot;&gt;Proxmox&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;docs.vmware.com&#x2F;en&#x2F;VMware-vSphere&#x2F;index.html&quot;&gt;vSphere&lt;&#x2F;a&gt; and more - these are good solutions but didn&#x27;t tickle the part of my brain it needed to.&lt;&#x2F;li&gt;
+&lt;li&gt;Going (mostly) all in on &lt;a href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The above greatly simplifies the journey in tech for my home-lab over the last close to decade now. 
+But I&#x27;m just spewing thought into text in order to punch that &lt;code&gt;git commit&lt;&#x2F;code&gt; 
+in before work.&lt;&#x2F;p&gt;
+&lt;p&gt;It seems homelabs are somewhat destined to become forever-jobs unless you put bounds on what you 
+want to do and the time you&#x27;ll spend on it. This isn&#x27;t bad unless you&#x27;re time poor but
+does mean you mightn&#x27;t have the time to journey into some nooks and crannies of tech such as BSD 
+jails vs docker vs chroot. This is fine because the time bounds play an important
+part of deciding what to use and it&#x27;ll generally be best to keep to well trodden paths. Why bother 
+with jails if most of the industry is hailing docker&#x2F;OCI as the reasonable path forward?&lt;&#x2F;p&gt;
+&lt;p&gt;Without the &lt;code&gt;I use NixOS btw&lt;&#x2F;code&gt; meme settling in too much, for homelab purposes I think the composability 
+of Nix is a huge win for time savings - you can still leverage common patterns 
+made by others in a pinch but also build&#x2F;design your own if you&#x27;re inclined. There&#x27;s some magic that 
+exists in config-as-code that is certainly scratching that part of the brain I needed right now.&lt;&#x2F;p&gt;
+&lt;p&gt;As my career has centered around the identification and rating of risks associated with various technical 
+decisions or implementations the approach NixOS applies makes it far easier to reason with the system state
+than other solutions. &lt;&#x2F;p&gt;
+&lt;p&gt;There is a dark-side to this choice however and it&#x27;s been teased out in a fair few blog
+posts by others recently and admitted by &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&quot;&gt;Tweag&lt;&#x2F;a&gt; that the ability to simply pickup and 
+run with the solution is &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-08-04-tweag-and-nix-future&#x2F;&quot;&gt;not your run-of-the-mill system&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;There are possible fixes for this beyond the suggestions made in &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-08-04-tweag-and-nix-future&#x2F;&quot;&gt;the roadmap for nix by Tweag&lt;&#x2F;a&gt; as 
+well as the idea to &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-03-11-nickel-first-release&#x2F;&quot;&gt;shift the language &#x2F; offer alternatives&lt;&#x2F;a&gt; 
+to give a newcomer a better chance at understanding the design quickly. Currently the documentation for Nix is &lt;em&gt;okay&lt;&#x2F;em&gt;
+however more complex systems will require a good understanding of the language and mastery of the &lt;a href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nix_command&#x2F;repl&quot;&gt;repl&lt;&#x2F;a&gt; 
+which isn&#x27;t a good argument to use the solution if the environment is anything beyond a homelab.
+Myself and a friend regularly laugh about a quote from Wesley Aptekar-Cassels in their blog post about this &lt;a href=&quot;https:&#x2F;&#x2F;blog.wesleyac.com&#x2F;posts&#x2F;the-curse-of-nixos&quot;&gt;The Curse of NixOS&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;that requires configuration with the second-worst homegrown config programming language I&#x27;ve ever used&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;The above is &lt;em&gt;too true&lt;&#x2F;em&gt; until a user has surmounted a learning curve that effectively mirrors that of:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;rust&lt;&#x2F;li&gt;
+&lt;li&gt;dwarf fortress&lt;&#x2F;li&gt;
+&lt;li&gt;eve-online (never played it, but have heard about as much plus the meme fits)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;376213f31ffead1600.png&quot; &#x2F;&gt;
+&lt;p&gt; &lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;2c537e5e8c483db500.png&quot; &#x2F;&gt;
+&lt;p&gt; &lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;ff870c4a1ce58cb400.png&quot; &#x2F;&gt;
+&lt;p&gt;What&#x27;s worth noting is that a fair number of Nix users host their configurations in open repositories
+to enable alternative parties to learn and leverage config use-cases and generally make life easier.
+For example while the &lt;code&gt;dockutil&lt;&#x2F;code&gt; package exists for darwin_x86_64; the options behind the package would
+assume a manual application of commands to get a config as desired. But by some quick searching on github or
+a search engine I was able to find an example of options applied by &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tboerger&quot;&gt;tboerger&lt;&#x2F;a&gt;
+which enabled me to utilise an &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JayRovacsek&#x2F;nix-config&#x2F;blob&#x2F;6645bc56bbcd29e1895516d893205655307aba15&#x2F;options&#x2F;dockutil&#x2F;default.nix#L1&quot;&gt;extremely similar setup&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The point still stands though that the language used here might be a barrier to new users; the example
+uses some abstractions of &lt;code&gt;with lib;&lt;&#x2F;code&gt; and a few other things that a new user won&#x27;t be able to understand relatively 
+quickly and this makes me a :sadpanda:&lt;&#x2F;p&gt;
+&lt;p&gt;There is a flip side to this also which is part of the barrier here is the implications of most
+common learning pathways for people when it comes to programming: usually this goes;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;here&#x27;s a language&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s an if statement&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s a loop&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s an object&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Arguably the application of teaching generally not encompassing or favouring non-functional
+languages has meant that there&#x27;s a significant asynchronousity of approachability when it comes to
+functional languages (such as nix) &lt;&#x2F;p&gt;
+&lt;p&gt;Functional language advocacy certainly fits into the easy to assume non-pragmatic lens being applied to
+proposed solutions but this is tainted by the above problem which is learning preferences for:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result &lt;&#x2F;span&gt;&lt;span&gt;= []
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;.length; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;++) {
+&lt;&#x2F;span&gt;&lt;span&gt;     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;] * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;VS&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;x&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;x &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above both do the &lt;em&gt;same&lt;&#x2F;em&gt; thing yet the first example will be the intro to programming under a rationale
+that readability is increased - a fallacy driven by biases in the learning pathway the assessor takes also.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s an irony here though as this is being written by a person with biases also 🙂&lt;&#x2F;p&gt;
+&lt;p&gt;For now, chill with some Lonks, Zeldos and one-day the world might bend to our whims 😅&lt;&#x2F;p&gt;
+&lt;div  style=&quot;width: 100% !important; height: 500px !important;&quot;&gt;
+    &lt;iframe style=&quot;height:100% !important; width:100% !important;&quot;
+        src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;-z3RRwk2rdU&quot; webkitallowfullscreen
+        mozallowfullscreen allowfullscreen&gt;
+    &lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+	</entry>
+</feed>

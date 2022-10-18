@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title> - dependency management</title>
+	<link href="https://jayrovacsek.github.io/blog/tags/dependency-management/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://jayrovacsek.github.io/blog"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-10-18T00:00:00+00:00</updated>
+	<id>https://jayrovacsek.github.io/blog/tags/dependency-management/atom.xml</id>
+	<entry xml:lang="en">
+		<title>nix value proposition</title>
+		<published>2022-10-18T00:00:00+00:00</published>
+		<updated>2022-10-18T00:00:00+00:00</updated>
+		<link href="https://jayrovacsek.github.io/blog/nix-value-proposition/" type="text/html"/>
+		<id>https://jayrovacsek.github.io/blog/nix-value-proposition/</id>
+		<content type="html">&lt;p&gt;Part of my professional role is considering risk associated with systems, the mitigations, cost, benefit and implications
+of addressing a risk versus not. The call in the end is not mine to make and a stakeholder has the final call on what the best path
+will be; this is great as the custodian of the resource is well informed in making the best decision for what they need to do.&lt;&#x2F;p&gt;
+&lt;p&gt;As with most professionals; I commonly find myself asking: &amp;quot;but is my input sound, suitable etc&amp;quot; - after all, we&#x27;re just beings 
+trying to form a semblance of structure out of the chaos of the universe.&lt;&#x2F;p&gt;
+&lt;p&gt;Today I had a few funny conversations that led to a strong urge to just sit down, type and hope some sense would come out of it.
+A topic that has been surfaced twice in the last week or so for myself is: what is the value proposition of nix? While this is
+not verbatim how it was put, it&#x27;s the essence of what was asked.&lt;&#x2F;p&gt;
+&lt;p&gt;Before I get into the meat of this post, I want to cover off the idea of bandwagoning: I can buy into an idea pretty hard and can point to
+two technical ideas recently that this also correlated with a rise in attention for the topic; &lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Rust&lt;&#x2F;li&gt;
+&lt;li&gt;nix&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Fuck yeah both have been bandwagon topics - they rose from relative obscurity to a revered prominence by a small&#x2F;medium group of almost
+fanatical followers. The meme&#x27;y-ness of this is undeniable; &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;ansuz&#x2F;RIIR&quot;&gt;RIIR&lt;&#x2F;a&gt; and &lt;em&gt;I run nixos btw...&lt;&#x2F;em&gt; (sorry Arch fans - nix is here to eat your dinner)&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;377b6746a3cbe3e700.png&quot; &#x2F;&gt;
+&lt;p&gt;The merit of both of these ideas however is sound,. Rust brings to the table a safer way to write mission critical code, while nix
+brings to the table deterministic, reproducible builds in both an OS and software sense. &lt;&#x2F;p&gt;
+&lt;p&gt;Both are total victims of the following flaws:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;ease of use&lt;&#x2F;li&gt;
+&lt;li&gt;initial knowledge investment &#x2F; learning curve&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;This post is not to solve those things. Stuff that; RTFM, build a nix package, hack some Rust or don&#x27;t bother trying to suggest why the idea is bad.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m not trying to say all experiences are invalid beyond those in these technical niches; but you can&#x27;t be taken super seriously saying something along the
+lines of &amp;quot;(Rust|nix) is (some variation of negative)&amp;quot; if you haven&#x27;t invested some time into the idea to come to that conclusion.&lt;&#x2F;p&gt;
+&lt;p&gt;Now; I&#x27;d like to propose why as a general power-user I believe nix to be some awesome tech and to be significantly groundbreaking in removing a whole class
+of problems with package&#x2F;system management. &lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;re full nix-memelords from here and not going to talk Rust anymore.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;reproducibility&quot;&gt;Reproducibility&lt;&#x2F;h1&gt;
+&lt;p&gt;There are mountains of literature of why reproducible builds matter, before we go on there is a need to make clear distinction that reproducibility is
+NOT repeatability but a superset of repeatability. Docker&#x2F;build scripts&#x2F;CICD are neat but very rarely absolutely reproducible given an ease of tainting
+output with environmental factors that aren&#x27;t stable.&lt;&#x2F;p&gt;
+&lt;p&gt;A great source of information on why reproducibility matter is &lt;a href=&quot;https:&#x2F;&#x2F;reproducible-builds.org&#x2F;&quot;&gt;Reproducable Builds&lt;&#x2F;a&gt;. This facet of 
+software security is a problem that a large portion of the software development world is not yet mature enough to tackle. There certainly
+is a large number of exceptions to this statement, but the truth of what communities are focused on solving is not the problems posed by
+reproducibility. They might be focused on delivering a product, expanding a software or some other primary goal and this is a shame for the 
+security of end-users; not all software needs this level of scrutiny, but just as privacy is eroded by a &amp;quot;I have nothing to hide&amp;quot; mentality,
+so is the normalisation of not ensuring software deployments are reproducible.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;an-ability-to-audit&quot;&gt;An Ability to Audit&lt;&#x2F;h1&gt;
+&lt;p&gt;An implication of reproducible builds is that a consumer can validate that the output is consistent with a release candidate; irrespective of 
+if a second, day or year pass I can validate that the version of a software you are offering is the same as what your source code builds into.&lt;&#x2F;p&gt;
+&lt;p&gt;The fallacy of many eyes over open-source software making for more security does come in here; without assessing all of the source code leading up
+to the output we cannot have confidence. But the implications of an ability to govern the inputs to ensure a reproducable output are worth their weight
+in gold. I want to avoid too many examples in this post; but the below should encapsulate enough of why a generic docker build is not enough unless
+explicit on it&#x27;s inputs:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;dockerfile&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-dockerfile &quot;&gt;&lt;code class=&quot;language-dockerfile&quot; data-lang=&quot;dockerfile&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;FROM&lt;&#x2F;span&gt;&lt;span&gt; node:lts-alpine3.16
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;RUN &lt;&#x2F;span&gt;&lt;span&gt;apk add --no-cache python3 make g++
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Cool - the above would give us a base environment that has nodejs in LTS flavour; python3, make and g++. &lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s at-least four issues with this - and if you picked the &lt;code&gt;apk add&lt;&#x2F;code&gt; items as problematic before now - ten points to your house.
+The fourth issue in above is in the base image used - at time of writing that would be a nodejs v16 install on alpine.&lt;&#x2F;p&gt;
+&lt;p&gt;In a &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nodejs&#x2F;release#release-schedule&quot;&gt;week&#x27;s time&lt;&#x2F;a&gt; (2022-10-25) this is will jump to nodejs v18. Sure you&#x27;re probably noting that you could pin the nodejs version also via &lt;code&gt;node:16-alpine3.16&lt;&#x2F;code&gt; but all of these things are just another footgun to experience when a situation exists where a package just doesn&#x27;t build under a version of node.&lt;&#x2F;p&gt;
+&lt;p&gt;This is not even starting on the fact that the versions on python3, make and g++ are likely to change over time with an inability for us to pin those short of wget&#x27;ing their release candidates explicitly and manually managing them as an install in our dockerfile. This is pain.&lt;&#x2F;p&gt;
+&lt;p&gt;Consider instead a nix-shell environment that will always resolve to a consistent version of the required packages:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span&gt;nxipkgs ? &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;import &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fetchTarball &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;22.05&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;url &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;https:&#x2F;&#x2F;github.com&#x2F;NixOS&#x2F;nixpkgs&#x2F;archive&#x2F;refs&#x2F;tags&#x2F;22.05.tar.gz&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;sha256 &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;0d643wp3l77hv2pmg2fi7vyxn4rwy0iyr8djcw1h5x72315ck9ik&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;}) { } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;buildInputs &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nixpkgs&lt;&#x2F;span&gt;&lt;span&gt;; [ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nodejs-16_x libgcc python3Minimal gnumake &lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;name &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;some-dev-env&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;shellHook &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nixpkgs&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkShell &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;inherit &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;buildInputs name shellHook&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above is likely a foreign construct for someone new to nix (and hence the killer of nix is usability not functionality), but achieves the following:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;nixpkgs is available; explicitly pinned to the 22.05 release with a hash validation of the received payload&lt;&#x2F;li&gt;
+&lt;li&gt;nodejs, g++, python3 and make are fixed on versions that &lt;em&gt;cannot&lt;&#x2F;em&gt; change unless we change the source.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;There&#x27;s some hidden gems in the above also however; this is a shell configuration: it is &lt;em&gt;ephemeral&lt;&#x2F;em&gt; in terms of the applications existing in your shell.
+There&#x27;s no need to consider managing the version of python here and in another project that needs 3.10 or 3.6 when we are using 
+&lt;a href=&quot;https:&#x2F;&#x2F;search.nixos.org&#x2F;packages?channel=22.05&amp;amp;show=python3Minimal&amp;amp;from=0&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=python3Min&quot;&gt;3.9.13&lt;&#x2F;a&gt; very explicitly.
+We load these files into our path, use them for our requirements and then do not have them pollute our device beyond their requirement. Depending on how we&#x27;ve got
+garbage collection configured on a system they might exist if you know where to look for them up to an indefinite future; for example:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;sh&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-sh &quot;&gt;&lt;code class=&quot;language-sh&quot; data-lang=&quot;sh&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;&#x2F;nix&#x2F;store&#x2F;shpy4sb7k20x9ilry8r6y8cr75b1q2x9-nodejs-16.14.0 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h1 id=&quot;vmdr&quot;&gt;VMDR&lt;&#x2F;h1&gt;
+&lt;p&gt;I&#x27;m a security dude. I care alot about the composition of software and systems as covered somewhat in the first paragraph of this post.
+Because of how a nix package requires other nix packages to build we can know the all requirements to build our package or system meaning
+those vulnerability management detection and response systems are something we can be extremely close to replicating without paying a kidney a 
+year to achieve.&lt;&#x2F;p&gt;
+&lt;p&gt;Consider the before mentioned version of nodejs on my system: &lt;code&gt;16.14.0&lt;&#x2F;code&gt; - what went into this build? Using &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;craigmbooth&#x2F;nix-visualize&quot;&gt;nix-visualize&lt;&#x2F;a&gt; we can generate a neat image depicting a dependency graph:&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;f9a16bf5e8e1a2fc00.png&quot; &#x2F;&gt;
+&lt;p&gt;The output of the above is smaller than I&#x27;d like but if the image is opened in a new tab it might be more consumable for a viewer. The tldr of it is that we get an explicit set of dependencies that are required for the package meaning we can pull data related to each of these packages from NIST to understand what&#x2F;if we have vulnerability exposure &lt;em&gt;ahead&lt;&#x2F;em&gt; of time if we are so inclined.&lt;&#x2F;p&gt;
+&lt;p&gt;The awesome folk creating &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;flyingcircusio&#x2F;vulnix&quot;&gt;vulnix&lt;&#x2F;a&gt; have enabled us to point at a derivation (a build in nix terms), gather all data related from &lt;a href=&quot;https:&#x2F;&#x2F;nvd.nist.gov&#x2F;vuln&#x2F;&quot;&gt;NIST&lt;&#x2F;a&gt; and get an exposure list going.&lt;&#x2F;p&gt;
+&lt;p&gt;This is not just for packages - as a system&#x27;s configuration is a derivation that includes
+dependencies and those dependencies likely dependencies; we can understand if our current system is weak to flaws, if our build&#x2F;runtime dependencies are weak to flaws 
+and extend this out to understand if we update a system, is it still vulnerable to these issues.&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;e62edcb5ea157ac000.png&quot; &#x2F;&gt;
+&lt;p&gt;A pointless Stable Diffusion generated muppet image.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;i-m-getting-tired&quot;&gt;I&#x27;m Getting Tired&lt;&#x2F;h1&gt;
+&lt;p&gt;This post won&#x27;t wrap up in a nice summary of all the reasons nix is cool AF - but should showcase at-least two reasons of why
+the investment in learning nix is a solid one if you:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;hate encountering &amp;quot;works on my machine (tm)&amp;quot;&lt;&#x2F;li&gt;
+&lt;li&gt;want to develop an app without thought on installing; go, rust, python, racket, zig, java, a mixture or ALL of these at the same time&lt;&#x2F;li&gt;
+&lt;li&gt;care about your system:
+&lt;ul&gt;
+&lt;li&gt;being managed by you and not M$&#x2F;Tim Apple&lt;&#x2F;li&gt;
+&lt;li&gt;being measurable in terms of vulnerabilities (that are known)&lt;&#x2F;li&gt;
+&lt;li&gt;being consistent in behavior&lt;&#x2F;li&gt;
+&lt;li&gt;being portable if you have reason to migrate it at some point or just want to test changes&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;What I haven&#x27;t really covered in this is:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;generations&lt;&#x2F;li&gt;
+&lt;li&gt;read-only &#x2F; immutable package installs&lt;&#x2F;li&gt;
+&lt;li&gt;per-user installs&lt;&#x2F;li&gt;
+&lt;li&gt;dotfile management so your $PROGRAM acts the same way across multiple systems&lt;&#x2F;li&gt;
+&lt;li&gt;source-control aware build systems (if it ain&#x27;t see by source control, it ain&#x27;t considered by nix)&lt;&#x2F;li&gt;
+&lt;li&gt;build environment sandboxes to ensure purity of inputs&#x2F;outputs&lt;&#x2F;li&gt;
+&lt;li&gt;cross compilation capabilities&lt;&#x2F;li&gt;
+&lt;li&gt;environment minimalisation - can&#x27;t attack packages that ain&#x27;t there&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;These are the reasons the time I&#x27;ve utilised to learn nix is, in my books a great investment - hopefully we see either nix or
+something like nix lead the next epoch of software engineering &amp;amp; system management that we pretty desperately need.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

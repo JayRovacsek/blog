@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title> - docker</title>
+	<link href="https://jayrovacsek.github.io/blog/tags/docker/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://jayrovacsek.github.io/blog"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-08-19T00:00:00+00:00</updated>
+	<id>https://jayrovacsek.github.io/blog/tags/docker/atom.xml</id>
+	<entry xml:lang="en">
+		<title>nix + darwin + docker</title>
+		<published>2022-08-19T00:00:00+00:00</published>
+		<updated>2022-08-19T00:00:00+00:00</updated>
+		<link href="https://jayrovacsek.github.io/blog/darwin-and-docker/" type="text/html"/>
+		<id>https://jayrovacsek.github.io/blog/darwin-and-docker/</id>
+		<content type="html">&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;a69e2a20acdeda8100.png&quot; &#x2F;&gt;
+&lt;p&gt;Docker is a pretty industry prolific tool that gives users the ability to 
+be repeatable across environments pretty easily. It&#x27;s highly ergonomic once setup
+and easy to rationalise with what and how it&#x27;s doing things once you&#x27;ve skimmed the 
+basic settings, ran a &lt;code&gt;hello-world&lt;&#x2F;code&gt; and dipped your toes in proverbial pools.&lt;&#x2F;p&gt;
+&lt;p&gt;Recently docker made a shift in the ability to use docker desktop for free when it comes to
+organisations - this freemium style model is... great! Yep - I&#x27;m not going to suggest docker
+should continue propping up large businesses with free work produced by awesome people,
+it deserves to be a paid product for the polish applied in both docker desktop and 
+dockerhub. While I&#x27;d still be militantly against utilising a GUI for docker as &lt;code&gt;compose&lt;&#x2F;code&gt; really gives
+you the tools to manage more complex situations well, it is, what it is.&lt;&#x2F;p&gt;
+&lt;p&gt;I wanted to use docker on my work machines in a way that lets me both be repeatable and 
+repoducable in the output. You &lt;em&gt;could&lt;&#x2F;em&gt; write a shell script that wraps the install of
+the docker client, creates a qemu guest, passes the required sock between guest and host then 
+you&#x27;d be off to the races. But this is both a serious rabbit-hole as well as not 
+repoducable by nature (unless you really put the effort in to make it).&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;6901d3acdddd21c800.png&quot; &#x2F;&gt;
+&lt;p&gt;Enter nix - on nixOS we&#x27;ve got &lt;code&gt;virtualisation.docker.enable&lt;&#x2F;code&gt; which is mint! Don&#x27;t make 
+me think about how it&#x27;s working under the hood and give the ability to use docker, like... pronto.
+On darwin however the option for virtualisation doesn&#x27;t exist. Not only this but we&#x27;re not on
+a linux kernel leading to some extra sauce being required to get everything going.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;abiosoft&#x2F;colima&quot;&gt;Colima&lt;&#x2F;a&gt; is an awesome project that seeks to wrap the complexity of creating a suitable VM
+and gives us a default of &amp;quot;hey - just run the dockers&amp;quot;, it&#x27;s available in a few different places
+but best of all: in &lt;code&gt;nixpkgs&lt;&#x2F;code&gt; meaning we can either pin or be certain of current version across
+any number of builds when using flakes.&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;2457be0103205b8b00.png&quot; &#x2F;&gt;
+&lt;p&gt;To ensure we can just use docker at any point I needed to use &lt;code&gt;launchd&lt;&#x2F;code&gt; units to manage the spin up
+of colima. There is some hackiness about the way that the launchd unit is defined, but seems like it
+catches the obvious edge-cases I encountered; I wrote a simple extension to options for darwin 
+(though testing if host system is darwin is an assertion I should include on this) and the end-result 
+came out as below:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;{ &lt;&#x2F;span&gt;&lt;span&gt;config, pkgs, lib, ... &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;cfg &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;virtualisation&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;docker-darwin&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;requiredPackages &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span&gt;; [ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;colima docker &lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;in with &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lib&lt;&#x2F;span&gt;&lt;span&gt;; {
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;options &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;virtualisation&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;docker-darwin &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkOption &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bool&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;false&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;description &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mdDoc &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          This option enables docker on darwin, a daemon that manages
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          linux containers. Users can interact with
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          the daemon (e.g. to start or stop containers) using the
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          {command}`docker` command line tool.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;      };
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;logFile &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkOption &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;type &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;types&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nullOr types&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;path&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;default &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;tmp&#x2F;docker-darwin.log&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;example &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;var&#x2F;log&#x2F;docker-darwin.log&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;description &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;          The logfile to use for the docker service.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;      };
+&lt;&#x2F;span&gt;&lt;span&gt;    };
+&lt;&#x2F;span&gt;&lt;span&gt;  };
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;config &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkIf cfg&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;enable &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;systemPackages &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;requiredPackages&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;launchd&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;user&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;agents&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;docker &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;path &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;requiredPackages &lt;&#x2F;span&gt;&lt;span&gt;++ [ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;config&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;environment&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;systemPath &lt;&#x2F;span&gt;&lt;span&gt;];
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Script logic is:
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# check if docker ps gives a zero exit code, if not use `colima start`
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# but guard this also from unclean stops by assuming in another non
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# zero exit that a qemu host exists&#x2F;is running but host side is borked
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# and pkill the pid if so.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Then check colima status, if default (normal colima namespace with start)
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# has a non-zero exit (i.e not running) start it.
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;script &lt;&#x2F;span&gt;&lt;span&gt;= &amp;#39;&amp;#39;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;docker&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;docker ps -q || &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;colima&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;colima start || pkill -F ~&#x2F;.lima&#x2F;colima&#x2F;qemu.pid 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;colima&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;colima status -p default || &lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;${&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;pkgs&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#c0c5ce;&quot;&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#bf616a;&quot;&gt;colima&lt;&#x2F;span&gt;&lt;span style=&quot;font-style:italic;color:#ab7967;&quot;&gt;}&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;&#x2F;bin&#x2F;colima start default 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;      &lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&amp;#39;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;      &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;serviceConfig &lt;&#x2F;span&gt;&lt;span&gt;= {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;Label &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;local.docker&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;AbandonProcessGroup &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;RunAtLoad &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;true&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;ExitTimeOut &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;StandardOutPath &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;logFile&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;StandardErrorPath &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;logFile&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;      };
+&lt;&#x2F;span&gt;&lt;span&gt;    };
+&lt;&#x2F;span&gt;&lt;span&gt;  };
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The only real rough edge I came across was that launchd kills subprocesses once the parent process exits.
+Now this might just be not spending enough time reading all the options for launchd but the documentation
+of launchd &lt;em&gt;REALLY&lt;&#x2F;em&gt; sucks. The solve for this issue was to add &lt;code&gt;AbandonProcessGroup&lt;&#x2F;code&gt; to the 
+serviceConfig and launchd stopped killing and reloading docker until infinity.&lt;&#x2F;p&gt;
+&lt;p&gt;When &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-08-04-tweag-and-nix-future&#x2F;&quot;&gt;Tweag recently posted the roadmap for nix&lt;&#x2F;a&gt;
+they mentioned ubiquity between linux &amp;amp; darwin these kind of rough edges (docker requiring custom written
+options) are the kind of things that could really help in the adoption of nix, I&#x27;m keen to see what
+they come out with!&lt;&#x2F;p&gt;
+&lt;p&gt;Yep - I should&#x2F;could probably create a pull request for the option to be upstream&#x27;d into nix-darwin but
+the imposter syndrome is real and my implementation of the service could probably be polished a bit.&lt;&#x2F;p&gt;
+&lt;p&gt;As for the awesome artwork DALL-E 2 is generating, a friend generated a token&#x27;s worth of 
+images for me to utilise that pretty much has me sold on getting onto using it for
+slick images here. All images but the docker logo on this page are thanks to this&lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;bd476f0cc8b5c2ce00.png&quot; &#x2F;&gt;
+&lt;p&gt; &lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;16d7e16366acc1c200.png&quot; &#x2F;&gt;</content>
+	</entry>
+	<entry xml:lang="en">
+		<title>nixos &amp; homelab reflections</title>
+		<published>2022-08-12T00:00:00+00:00</published>
+		<updated>2022-08-12T00:00:00+00:00</updated>
+		<link href="https://jayrovacsek.github.io/blog/homelab/" type="text/html"/>
+		<id>https://jayrovacsek.github.io/blog/homelab/</id>
+		<content type="html">&lt;p&gt;At home I inflict a fair bit of tech on my family. This all started from inspiration from a 
+friend many years ago and continued to manifest while I was being sucked down a tech rabbit-hole
+at uni and then into my professional career.&lt;&#x2F;p&gt;
+&lt;p&gt;This endeavour has been great in helping me understand tech that I otherwise wouldn&#x27;t have dug further 
+into:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;managing a router beyond your basic plug and play devices offered by ISPs&lt;&#x2F;li&gt;
+&lt;li&gt;managing firewalls to segment networks logically rather than physically&lt;&#x2F;li&gt;
+&lt;li&gt;setting up storage servers to hoard data&lt;&#x2F;li&gt;
+&lt;li&gt;managing DNS both to block unwanted connections but also ensure egress traffic from the network is secure rather than default &lt;&#x2F;li&gt;
+&lt;li&gt;containerisation&lt;&#x2F;li&gt;
+&lt;li&gt;security implications of tech choices&lt;&#x2F;li&gt;
+&lt;li&gt;etc&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The iterations of home-lab have been pretty stock standard thus far; &lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Running all Windows compute and getting host to host connectivity going via shares &lt;&#x2F;li&gt;
+&lt;li&gt;Jumping to &lt;a href=&quot;https:&#x2F;&#x2F;unraid.net&#x2F;&quot;&gt;Unraid&lt;&#x2F;a&gt; which simplified the management of storage on Linux initially as well as offering a nice graphical approach to docker which was on a very sharp upwards trend at the time (and still is).&lt;&#x2F;li&gt;
+&lt;li&gt;Trying the waters of solutions such as &lt;a href=&quot;https:&#x2F;&#x2F;www.proxmox.com&quot;&gt;Proxmox&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;docs.vmware.com&#x2F;en&#x2F;VMware-vSphere&#x2F;index.html&quot;&gt;vSphere&lt;&#x2F;a&gt; and more - these are good solutions but didn&#x27;t tickle the part of my brain it needed to.&lt;&#x2F;li&gt;
+&lt;li&gt;Going (mostly) all in on &lt;a href=&quot;https:&#x2F;&#x2F;nixos.org&#x2F;&quot;&gt;NixOS&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The above greatly simplifies the journey in tech for my home-lab over the last close to decade now. 
+But I&#x27;m just spewing thought into text in order to punch that &lt;code&gt;git commit&lt;&#x2F;code&gt; 
+in before work.&lt;&#x2F;p&gt;
+&lt;p&gt;It seems homelabs are somewhat destined to become forever-jobs unless you put bounds on what you 
+want to do and the time you&#x27;ll spend on it. This isn&#x27;t bad unless you&#x27;re time poor but
+does mean you mightn&#x27;t have the time to journey into some nooks and crannies of tech such as BSD 
+jails vs docker vs chroot. This is fine because the time bounds play an important
+part of deciding what to use and it&#x27;ll generally be best to keep to well trodden paths. Why bother 
+with jails if most of the industry is hailing docker&#x2F;OCI as the reasonable path forward?&lt;&#x2F;p&gt;
+&lt;p&gt;Without the &lt;code&gt;I use NixOS btw&lt;&#x2F;code&gt; meme settling in too much, for homelab purposes I think the composability 
+of Nix is a huge win for time savings - you can still leverage common patterns 
+made by others in a pinch but also build&#x2F;design your own if you&#x27;re inclined. There&#x27;s some magic that 
+exists in config-as-code that is certainly scratching that part of the brain I needed right now.&lt;&#x2F;p&gt;
+&lt;p&gt;As my career has centered around the identification and rating of risks associated with various technical 
+decisions or implementations the approach NixOS applies makes it far easier to reason with the system state
+than other solutions. &lt;&#x2F;p&gt;
+&lt;p&gt;There is a dark-side to this choice however and it&#x27;s been teased out in a fair few blog
+posts by others recently and admitted by &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&quot;&gt;Tweag&lt;&#x2F;a&gt; that the ability to simply pickup and 
+run with the solution is &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-08-04-tweag-and-nix-future&#x2F;&quot;&gt;not your run-of-the-mill system&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;There are possible fixes for this beyond the suggestions made in &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-08-04-tweag-and-nix-future&#x2F;&quot;&gt;the roadmap for nix by Tweag&lt;&#x2F;a&gt; as 
+well as the idea to &lt;a href=&quot;https:&#x2F;&#x2F;www.tweag.io&#x2F;blog&#x2F;2022-03-11-nickel-first-release&#x2F;&quot;&gt;shift the language &#x2F; offer alternatives&lt;&#x2F;a&gt; 
+to give a newcomer a better chance at understanding the design quickly. Currently the documentation for Nix is &lt;em&gt;okay&lt;&#x2F;em&gt;
+however more complex systems will require a good understanding of the language and mastery of the &lt;a href=&quot;https:&#x2F;&#x2F;nixos.wiki&#x2F;wiki&#x2F;Nix_command&#x2F;repl&quot;&gt;repl&lt;&#x2F;a&gt; 
+which isn&#x27;t a good argument to use the solution if the environment is anything beyond a homelab.
+Myself and a friend regularly laugh about a quote from Wesley Aptekar-Cassels in their blog post about this &lt;a href=&quot;https:&#x2F;&#x2F;blog.wesleyac.com&#x2F;posts&#x2F;the-curse-of-nixos&quot;&gt;The Curse of NixOS&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;that requires configuration with the second-worst homegrown config programming language I&#x27;ve ever used&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;The above is &lt;em&gt;too true&lt;&#x2F;em&gt; until a user has surmounted a learning curve that effectively mirrors that of:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;rust&lt;&#x2F;li&gt;
+&lt;li&gt;dwarf fortress&lt;&#x2F;li&gt;
+&lt;li&gt;eve-online (never played it, but have heard about as much plus the meme fits)&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;376213f31ffead1600.png&quot; &#x2F;&gt;
+&lt;p&gt; &lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;2c537e5e8c483db500.png&quot; &#x2F;&gt;
+&lt;p&gt; &lt;&#x2F;p&gt;
+&lt;img style=&quot;display: block; margin-left: auto; margin-right: auto; width: 100%;&quot; src=&quot;https:&amp;#x2F;&amp;#x2F;jayrovacsek.github.io&amp;#x2F;blog&amp;#x2F;processed_images&amp;#x2F;ff870c4a1ce58cb400.png&quot; &#x2F;&gt;
+&lt;p&gt;What&#x27;s worth noting is that a fair number of Nix users host their configurations in open repositories
+to enable alternative parties to learn and leverage config use-cases and generally make life easier.
+For example while the &lt;code&gt;dockutil&lt;&#x2F;code&gt; package exists for darwin_x86_64; the options behind the package would
+assume a manual application of commands to get a config as desired. But by some quick searching on github or
+a search engine I was able to find an example of options applied by &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;tboerger&quot;&gt;tboerger&lt;&#x2F;a&gt;
+which enabled me to utilise an &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JayRovacsek&#x2F;nix-config&#x2F;blob&#x2F;6645bc56bbcd29e1895516d893205655307aba15&#x2F;options&#x2F;dockutil&#x2F;default.nix#L1&quot;&gt;extremely similar setup&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The point still stands though that the language used here might be a barrier to new users; the example
+uses some abstractions of &lt;code&gt;with lib;&lt;&#x2F;code&gt; and a few other things that a new user won&#x27;t be able to understand relatively 
+quickly and this makes me a :sadpanda:&lt;&#x2F;p&gt;
+&lt;p&gt;There is a flip side to this also which is part of the barrier here is the implications of most
+common learning pathways for people when it comes to programming: usually this goes;&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;here&#x27;s a language&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s an if statement&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s a loop&lt;&#x2F;li&gt;
+&lt;li&gt;here&#x27;s an object&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Arguably the application of teaching generally not encompassing or favouring non-functional
+languages has meant that there&#x27;s a significant asynchronousity of approachability when it comes to
+functional languages (such as nix) &lt;&#x2F;p&gt;
+&lt;p&gt;Functional language advocacy certainly fits into the easy to assume non-pragmatic lens being applied to
+proposed solutions but this is tainted by the above problem which is learning preferences for:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result &lt;&#x2F;span&gt;&lt;span&gt;= []
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;for &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;.length; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;++) {
+&lt;&#x2F;span&gt;&lt;span&gt;     &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;push&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;index&lt;&#x2F;span&gt;&lt;span&gt;] * &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;  }
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;VS&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;js&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-js &quot;&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original &lt;&#x2F;span&gt;&lt;span&gt;= [&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;const &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;result &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;original&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;map&lt;&#x2F;span&gt;&lt;span&gt;((&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;x&lt;&#x2F;span&gt;&lt;span&gt;) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;=&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;x &lt;&#x2F;span&gt;&lt;span&gt;* &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The above both do the &lt;em&gt;same&lt;&#x2F;em&gt; thing yet the first example will be the intro to programming under a rationale
+that readability is increased - a fallacy driven by biases in the learning pathway the assessor takes also.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s an irony here though as this is being written by a person with biases also 🙂&lt;&#x2F;p&gt;
+&lt;p&gt;For now, chill with some Lonks, Zeldos and one-day the world might bend to our whims 😅&lt;&#x2F;p&gt;
+&lt;div  style=&quot;width: 100% !important; height: 500px !important;&quot;&gt;
+    &lt;iframe style=&quot;height:100% !important; width:100% !important;&quot;
+        src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;-z3RRwk2rdU&quot; webkitallowfullscreen
+        mozallowfullscreen allowfullscreen&gt;
+    &lt;&#x2F;iframe&gt;
+&lt;&#x2F;div&gt;
+</content>
+	</entry>
+</feed>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title> - terraform</title>
+	<link href="https://jayrovacsek.github.io/blog/tags/terraform/atom.xml" rel="self" type="application/atom+xml"/>
+  <link href="https://jayrovacsek.github.io/blog"/>
+	<generator uri="https://www.getzola.org/">Zola</generator>
+	<updated>2022-10-07T00:00:00+00:00</updated>
+	<id>https://jayrovacsek.github.io/blog/tags/terraform/atom.xml</id>
+	<entry xml:lang="en">
+		<title>terraform, nix, nixos and terranix</title>
+		<published>2022-10-07T00:00:00+00:00</published>
+		<updated>2022-10-07T00:00:00+00:00</updated>
+		<link href="https://jayrovacsek.github.io/blog/terraform-and-nix/" type="text/html"/>
+		<id>https://jayrovacsek.github.io/blog/terraform-and-nix/</id>
+		<content type="html">&lt;p&gt;For various reasons I have a need to create cloud services in a simple, declarative and consistent way.
+The answer to this is clear depending on which cloud I am looking to use (spoilers; it&#x27;s AWS for now) and
+generally that would be AWS CDK - a neat way to package everything I need (maybe except a single edge-case but
+that might just be a PBKAC issue)&lt;&#x2F;p&gt;
+&lt;p&gt;Then I got thinking about the deployment of organisations, as is recommended by everyone when it comes to 
+putting a clear delineation between development, production and root accounts to begin with and AWS accounts.
+I have only skimmed over the surface of setting this up thus far and would love to chase it up sometime over the next week or two but
+from a high level it looks like AWS organisations are going to be easy to setup with terraform.&lt;&#x2F;p&gt;
+&lt;p&gt;Looking at the requirements for state, we really want to store tfstate in a S3 bucket; which feels like a fair bit of a 
+chicken and egg situation: &lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;I want to deploy terraform to manage AWS infrastructure&lt;&#x2F;li&gt;
+&lt;li&gt;Terraform requires state - S3 or local (or others, but lets ignore that)&lt;&#x2F;li&gt;
+&lt;li&gt;S3 would require an S3 bucket - of which this should not live in a root account&lt;&#x2F;li&gt;
+&lt;li&gt;Non-root account requires organisation provisioned&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Yeah...&lt;&#x2F;p&gt;
+&lt;p&gt;Anyways; I suppose a local state that&#x27;s migrated to S3 later could work; alternatively a hand-rolled development&#x2F;deployer
+organisation that is later captured as state to enable the whole configuration to be represented.&lt;&#x2F;p&gt;
+&lt;p&gt;Moving away from just the deployment of org structures; I&#x27;m in love with the idea of defining a nixOS configuration,
+building an AMI then deploying to variable size instances with scheduled up&#x2F;down rules to replace the by-hand
+CSGO server I&#x27;m currently running for work to be a wind-down activity on a Friday.&lt;&#x2F;p&gt;
+&lt;p&gt;This&#x27;ll need to be proved out, but coupling a flake with the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;nix-community&#x2F;nixos-generators&quot;&gt;nixos generators&lt;&#x2F;a&gt;
+repository
+it seems dead easy to do so!&lt;&#x2F;p&gt;
+&lt;p&gt;Maybe there&#x27;ll be a post in a few weeks from me lamenting the journey, or celebrating it&#x27;s success! &lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>

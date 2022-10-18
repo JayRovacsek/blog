@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+      <!-- Enable responsiveness on mobile devices-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+      <title></title>
+
+      
+
+      
+          <link rel="stylesheet" href="https://jayrovacsek.github.io/blog/site.css">
+      
+
+      
+      
+    </head>
+
+    <body class="hack dark main container">
+        
+    
+        
+                
+                    <header>
+                        <nav itemscope itemtype="http://schema.org/SiteNavigationElement">
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog">
+                                <span itemprop="name">home</span></a>
+                        
+                            <a itemprop="url"
+                               class=""
+                               href="https:&#x2F;&#x2F;jayrovacsek.github.io&#x2F;blog&#x2F;tags">
+                                <span itemprop="name">tags</span></a>
+                        
+                        </nav>
+                    </header>
+                
+            
+    
+
+<article itemscope itemtype="http://schema.org/BlogPosting">
+    <header>
+        <h1 itemprop="headline">nix + MVP SOEs</h1>
+        <span class="muted">
+    <svg style="margin-bottom:-3px" class="i-clock" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <circle cx="16" cy="16" r="14"/>
+        <path d="M16 8 L16 16 20 20"/>
+    </svg>
+    <span>4 minute read</span>
+    <svg style="margin-bottom: -3px" class="i-edit" viewBox="0 0 32 32"
+         width="16" height="16" fill="none" stroke="currentcolor"
+         stroke-linecap="round" stroke-linejoin="round" stroke-width="6.25%">
+        <path d="M30 7 L25 2 5 22 3 29 10 27 Z M21 6 L26 11 Z M5 22 L10 27 Z"/>
+    </svg>
+
+    Published: 2022-08-15
+</span>
+    </header>
+    <div itemprop="articleBody">
+      <p>A question came up recently around if nix could be leveraged to simplify an onboarding and
+asset management. There isn't a simple answer for this but we figured we'd consider evaluating
+the option on darwin hosts as an option rather than expecting end-users to install the base 
+tools &amp; apply configuration on a system in the same way policy expects it.</p>
+<p>Because I've already nix'd a few darwin machines I could re-use the configuration for the most 
+part which was nice. After having created a repo and copying the relevant files across I 
+started with solving the problem of applying explicit requirements for a number of hosts 
+that users couldn't just override.</p>
+<p>We'll ignore the fact that if a user is an administrator that they can override whatever they'd like
+but the risk of insider threat isn't what we're trying to address here.</p>
+<p>As all system configurations will be an output of <code>darwinConfigurations</code> when it comes to the flake,
+we can dynamically assess files within a <code>hosts</code> folder from the <code>flake.nix</code> file so that:</p>
+<ul>
+<li>users have no need to define their host in the flake, it's done auto-magically once a valid host config exists</li>
+<li>user changes to the repo can be applied against host configs or modules and the base opinions required by policy are for the most part immutable as code</li>
+</ul>
+<p>With the above considered, we can write some basic variable declarations before the main block of the flake 
+that handles the logic:</p>
+<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span>{
+</span><span>  </span><span style="color:#d08770;">description </span><span>= &quot;</span><span style="color:#a3be8c;">Darwin configurations</span><span>&quot;;
+</span><span>
+</span><span>  </span><span style="color:#d08770;">inputs </span><span>= {
+</span><span>    </span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:nixos/nixpkgs/nixos-22.05</span><span>&quot;;
+</span><span>
+</span><span>    </span><span style="color:#d08770;">firefox-darwin </span><span>= {
+</span><span>      </span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:bandithedoge/nixpkgs-firefox-darwin</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">follows </span><span>= &quot;</span><span style="color:#a3be8c;">nixpkgs</span><span>&quot;;
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#d08770;">darwin </span><span>= {
+</span><span>      </span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:lnl7/nix-darwin/master</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">follows </span><span>= &quot;</span><span style="color:#a3be8c;">nixpkgs</span><span>&quot;;
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#d08770;">home-manager </span><span>= {
+</span><span>      </span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:rycee/home-manager/master</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">follows </span><span>= &quot;</span><span style="color:#a3be8c;">nixpkgs</span><span>&quot;;
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#d08770;">agenix </span><span>= {
+</span><span>      </span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:ryantm/agenix</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">follows </span><span>= &quot;</span><span style="color:#a3be8c;">nixpkgs</span><span>&quot;;
+</span><span>    };
+</span><span>
+</span><span>    </span><span style="color:#d08770;">agenix-darwin </span><span>= {
+</span><span>      </span><span style="color:#d08770;">url </span><span>= &quot;</span><span style="color:#a3be8c;">github:cmhamill/agenix</span><span>&quot;;
+</span><span>      </span><span style="color:#d08770;">inputs</span><span>.</span><span style="color:#d08770;">nixpkgs</span><span>.</span><span style="color:#d08770;">follows </span><span>= &quot;</span><span style="color:#a3be8c;">nixpkgs</span><span>&quot;;
+</span><span>    };
+</span><span>  };
+</span><span>
+</span><span>  </span><span style="color:#d08770;">outputs </span><span>= </span><span style="color:#8fa1b3;">{ </span><span>self, nixpkgs, home-manager, darwin, firefox-darwin, agenix
+</span><span>    , agenix-darwin, ... </span><span style="color:#8fa1b3;">}</span><span>:
+</span><span>    </span><span style="color:#b48ead;">let
+</span><span>      </span><span style="color:#d08770;">fileNames </span><span>= path: </span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#bf616a;">attrNames </span><span>(</span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#bf616a;">readDir path</span><span>);
+</span><span>
+</span><span>      </span><span style="color:#d08770;">localOverlays </span><span>= </span><span style="color:#96b5b4;">import </span><span style="color:#a3be8c;">./overlays</span><span>;
+</span><span>      </span><span style="color:#d08770;">darwinOverlays </span><span>=
+</span><span>        [ </span><span style="color:#bf616a;">firefox-darwin</span><span>.</span><span style="color:#bf616a;">overlay agenix-darwin</span><span>.</span><span style="color:#bf616a;">overlay localOverlays </span><span>];
+</span><span>
+</span><span>      </span><span style="color:#d08770;">standardiseNix </span><span>= {
+</span><span>        </span><span style="color:#d08770;">environment</span><span>.</span><span style="color:#d08770;">etc</span><span>.&quot;</span><span style="color:#a3be8c;">nix/inputs/nixpkgs</span><span>&quot;.</span><span style="color:#d08770;">source </span><span>= </span><span style="color:#bf616a;">nixpkgs</span><span>.</span><span style="color:#bf616a;">outPath</span><span>;
+</span><span>        </span><span style="color:#d08770;">nix</span><span>.</span><span style="color:#d08770;">nixPath </span><span>= [ &quot;</span><span style="color:#a3be8c;">nixpkgs=/etc/nix/inputs/nixpkgs</span><span>&quot; ];
+</span><span>      };
+</span><span>
+</span><span>      </span><span style="color:#d08770;">flake </span><span>= { </span><span style="color:#d08770;">config</span><span>.</span><span style="color:#d08770;">_module</span><span>.</span><span style="color:#d08770;">args</span><span>.</span><span style="color:#d08770;">flake </span><span>= </span><span style="color:#bf616a;">self</span><span>; };
+</span><span>
+</span><span>      </span><span style="color:#d08770;">aarch64-darwin </span><span>= </span><span style="color:#96b5b4;">import </span><span style="color:#bf616a;">nixpkgs </span><span>{
+</span><span>        </span><span style="color:#d08770;">system </span><span>= &quot;</span><span style="color:#a3be8c;">aarch64-darwin</span><span>&quot;;
+</span><span>        </span><span style="color:#d08770;">overlays </span><span>= </span><span style="color:#bf616a;">darwinOverlays</span><span>;
+</span><span>        </span><span style="color:#d08770;">config </span><span>= { </span><span style="color:#d08770;">allowUnfree </span><span>= </span><span style="color:#d08770;">true</span><span>; };
+</span><span>        </span><span style="color:#d08770;">extraModules </span><span>= [ ];
+</span><span>      };
+</span><span>
+</span><span>      </span><span style="color:#d08770;">base-modules </span><span>=
+</span><span>        [ </span><span style="color:#bf616a;">flake standardiseNix agenix-darwin</span><span>.</span><span style="color:#bf616a;">nixosModules</span><span>.</span><span style="color:#bf616a;">age </span><span style="color:#a3be8c;">./modules/base </span><span>];
+</span><span>
+</span><span>      </span><span style="color:#d08770;">hostNames </span><span>= (</span><span style="color:#bf616a;">fileNames </span><span style="color:#a3be8c;">./hosts</span><span>);
+</span><span>
+</span><span>      </span><span style="color:#d08770;">hostConfigurations </span><span>= </span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#bf616a;">filter </span><span>(hostName:
+</span><span>        </span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#bf616a;">any </span><span>(filename: </span><span style="color:#bf616a;">filename </span><span>== &quot;</span><span style="color:#a3be8c;">default.nix</span><span>&quot;)
+</span><span>        (</span><span style="color:#bf616a;">fileNames </span><span style="color:#a3be8c;">./hosts</span><span>/</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">hostName</span><span style="font-style:italic;color:#ab7967;">}</span><span>)) </span><span style="color:#bf616a;">hostNames</span><span>;
+</span><span>
+</span><span>      </span><span style="color:#d08770;">darwinConfigurations </span><span>= </span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#bf616a;">foldl&#39; </span><span>(x: y: </span><span style="color:#bf616a;">x </span><span>// </span><span style="color:#bf616a;">y</span><span>) { } (</span><span style="color:#d08770;">builtins</span><span>.</span><span style="color:#96b5b4;">map
+</span><span>        (hostName: {
+</span><span>          &quot;</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">hostName</span><span style="font-style:italic;color:#ab7967;">}</span><span>&quot; = </span><span style="color:#bf616a;">darwin</span><span>.</span><span style="color:#bf616a;">lib</span><span>.</span><span style="color:#bf616a;">darwinSystem </span><span>{
+</span><span>            </span><span style="color:#b48ead;">inherit </span><span>(</span><span style="color:#bf616a;">aarch64-darwin</span><span>) </span><span style="color:#d08770;">system</span><span>;
+</span><span>            </span><span style="color:#d08770;">pkgs </span><span>= </span><span style="color:#bf616a;">aarch64-darwin</span><span>;
+</span><span>            </span><span style="color:#d08770;">modules </span><span>= [ </span><span style="color:#a3be8c;">./hosts</span><span>/</span><span style="font-style:italic;color:#ab7967;">${</span><span style="font-style:italic;color:#bf616a;">hostName</span><span style="font-style:italic;color:#ab7967;">} </span><span>] ++ </span><span style="color:#bf616a;">base-modules</span><span>;
+</span><span>          };
+</span><span>        }) </span><span style="color:#bf616a;">hostConfigurations</span><span>);
+</span><span>    </span><span style="color:#b48ead;">in </span><span>{
+</span><span>      </span><span style="color:#b48ead;">inherit </span><span style="color:#d08770;">darwinConfigurations</span><span>;
+</span><span>    };
+</span><span>}
+</span></code></pre>
+<p>The above is a bit of a mess but in essence will check children of the <code>hosts</code> folder 
+for suitable <code>default.nix</code> files and then generate a system configuration from it; 
+applying our base module set.
+(Yep - totally aware that the logic is a little flawed as it assumes children of the hosts folder are folders
+only, but that'll be a quick change once I get a moment) </p>
+<p>With the above said and done, we can add to the <code>modules/base</code> definition and all system configurations 
+defined will inherit from the base-modules. I'll need to dig into if <code>lib.mkForce</code> allows the override of these settings
+but anticipate the behavior is an error due to the same value being applied twice if a user were to 
+include a duplicate option to one in the base modules.</p>
+<p>The above is still a total WIP, but was promising to get a fair bit done in such a short period. The idea of a nix SOE
+is very much somewhat a hobbled version when you're using darwin as a base, but it'll be easy enough to shift the
+configuration into a Linux iteration also which enables us to use the awesome work of <a href="https://github.com/nix-community/nixos-generators">nixos-generators</a>
+meaning we'll not only have the option to define a Linux SOE that works on metal but generation of a disk 
+image will be easy to enable further POC.</p>
+
+    </div>
+
+    
+        <footer>
+            <hr>
+            <p>
+                
+                
+                
+                    
+                    tagged
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nix/">nix</a>
+                        
+                            
+                                
+                                    ,
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/soe/">soe</a>
+                        
+                            
+                                
+                                    and
+                                
+                            
+                        
+                    
+                        <a href="https://jayrovacsek.github.io/blog/tags/nix-darwin/">nix-darwin</a>
+                        
+                            
+                        
+                    
+                
+            </p>
+            
+            
+        </footer>
+    
+</article>
+
+
+    </body>
+
+</html>
