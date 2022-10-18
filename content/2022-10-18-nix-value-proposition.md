@@ -9,11 +9,11 @@ Part of my professional role is considering risk associated with systems, the mi
 of addressing a risk versus not. The call in the end is not mine to make and a stakeholder has the final call on what the best path
 will be; this is great as the custodian of the resource is well informed in making the best decision for what they need to do.
 
-As with most professionals; I commonly find myself asking but is my input sound, suitable etc - after all, we're just beings 
+As with most professionals; I commonly find myself asking: "but is my input sound, suitable etc" - after all, we're just beings 
 trying to form a semblance of structure out of the chaos of the universe.
 
 Today I had a few funny conversations that led to a strong urge to just sit down, type and hope some sense would come out of it.
-One topic that has been surfaced twice in the last week or so for myself is: what is the value proposition of nix? While this is
+A topic that has been surfaced twice in the last week or so for myself is: what is the value proposition of nix? While this is
 not verbatim how it was put, it's the essence of what was asked.
 
 Before I get into the meat of this post, I want to cover off the idea of bandwagoning: I can buy into an idea pretty hard and can point to
@@ -26,28 +26,34 @@ fanatical followers. The meme'y-ness of this is undeniable; [RIIR](https://githu
 
 {{ resize_image(path="../static/images/arch-vs-nix.png", width=500 height=500 op="fit") }}
 
-The merit of both of these ideas however is sound, Rust brings to the table a safer way to write mission critical code, while nix
-brings to the table deterministic, reproducible builds in both an OS and software sense. Both are total victims to a few shared flaws:
+The merit of both of these ideas however is sound,. Rust brings to the table a safer way to write mission critical code, while nix
+brings to the table deterministic, reproducible builds in both an OS and software sense. 
+
+Both are total victims of the following flaws:
   * ease of use
   * initial knowledge investment / learning curve
 
-This post is not to solve those things - stuff that; RTFM, build a nix package, hack some Rust or don't bother trying to suggest why the idea is bad.
+This post is not to solve those things. Stuff that; RTFM, build a nix package, hack some Rust or don't bother trying to suggest why the idea is bad.
+
 I'm not trying to say all experiences are invalid beyond those in these technical niches; but you can't be taken super seriously saying something along the
 lines of "(Rust|nix) is (some variation of negative)" if you haven't invested some time into the idea to come to that conclusion.
 
-Now; I'd like to propose why as a general power-user I believe nix to be some awesome tech; to be significantly groundbreaking in removing a whole class
-of problems with package/system management. We're full nix-memelords from here and not going to talk Rust anymore.
+Now; I'd like to propose why as a general power-user I believe nix to be some awesome tech and to be significantly groundbreaking in removing a whole class
+of problems with package/system management. 
+
+We're full nix-memelords from here and not going to talk Rust anymore.
 
 # Reproducibility
-There are mountains of literature of why reproducible builds matter, there is a need to make clear distinction that reproducibility is
-NOT repeatability but a superset of repeatability: docker/build scripts/CICD are neat but very rarely absolutely reproducible.
+There are mountains of literature of why reproducible builds matter, before we go on there is a need to make clear distinction that reproducibility is
+NOT repeatability but a superset of repeatability. Docker/build scripts/CICD are neat but very rarely absolutely reproducible given an ease of tainting
+output with environmental factors that aren't stable.
 
 A great source of information on why reproducibility matter is [Reproducable Builds](https://reproducible-builds.org/). This facet of 
 software security is a problem that a large portion of the software development world is not yet mature enough to tackle. There certainly
 is a large number of exceptions to this statement, but the truth of what communities are focused on solving is not the problems posed by
 reproducibility. They might be focused on delivering a product, expanding a software or some other primary goal and this is a shame for the 
 security of end-users; not all software needs this level of scrutiny, but just as privacy is eroded by a "I have nothing to hide" mentality,
-so is the normalisation of ensuring software deployments are reproducible.
+so is the normalisation of not ensuring software deployments are reproducible.
 
 # An Ability to Audit
 An implication of reproducible builds is that a consumer can validate that the output is consistent with a release candidate; irrespective of 
