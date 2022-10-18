@@ -143,6 +143,7 @@ What I haven't really covered in this is:
   * source-control aware build systems (if it ain't see by source control, it ain't considered by nix)
   * build environment sandboxes to ensure purity of inputs/outputs
   * cross compilation capabilities
+  * environment minimalisation - can't attack packages that ain't there
 
 These are the reasons the time I've utilised to learn nix is, in my books a great investment - hopefully we see either nix or
 something like nix lead the next epoch of software engineering & system management that we pretty desperately need.
