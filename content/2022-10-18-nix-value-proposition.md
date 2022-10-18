@@ -2,7 +2,7 @@
 title = "nix value proposition"
 date = 2022-10-18
 [taxonomies]
-tags = ["nix","vmdr","daily driver","portability"]
+tags = ["nix","vmdr","daily driver","portability","software-engineering","dependency management"]
 +++
 
 Part of my professional role is considering risk associated with systems, the mitigations, cost, benefit and implications
@@ -24,7 +24,7 @@ two technical ideas recently that this also correlated with a rise in attention 
 Fuck yeah both have been bandwagon topics - they rose from relative obscurity to a revered prominence by a small/medium group of almost
 fanatical followers. The meme'y-ness of this is undeniable; [RIIR](https://github.com/ansuz/RIIR) and _I run nixos btw..._ (sorry Arch fans - nix is here to eat your dinner)
 
-{{ resize_image(path="../static/images/arch-vs-nix.webp", width=500 height=500 op="fit") }}
+{{ resize_image(path="../static/images/arch-vs-nix.png", width=500 height=500 op="fit") }}
 
 The merit of both of these ideas however is sound, Rust brings to the table a safer way to write mission critical code, while nix
 brings to the table deterministic, reproducible builds in both an OS and software sense. Both are total victims to a few shared flaws:
@@ -69,7 +69,7 @@ Cool - the above would give us a base environment that has nodejs in LTS flavour
 There's at-least four issues with this - and if you picked the `apk add` items as problematic before now - ten points to your house.
 The fourth issue in above is in the base image used - at time of writing that would be a nodejs v16 install on alpine.
 
-In a [week's time](https://github.com/nodejs/release#release-schedule) this is likely to jump to nodejs v18. Sure you're probably noting that you could pin the nodejs version also via `node:16-alpine3.16` but all of these things are just another footgun to experience when a situation exists where a package just doesn't build under a version of node.
+In a [week's time](https://github.com/nodejs/release#release-schedule) (2022-10-25) this is will jump to nodejs v18. Sure you're probably noting that you could pin the nodejs version also via `node:16-alpine3.16` but all of these things are just another footgun to experience when a situation exists where a package just doesn't build under a version of node.
 
 This is not even starting on the fact that the versions on python3, make and g++ are likely to change over time with an inability for us to pin those short of wget'ing their release candidates explicitly and manually managing them as an install in our dockerfile. This is pain.
 
@@ -80,12 +80,12 @@ Consider instead a nix-shell environment that will always resolve to a consisten
   name = "22.05";
   url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz";
   sha256 = "0d643wp3l77hv2pmg2fi7vyxn4rwy0iyr8djcw1h5x72315ck9ik";
-}) { }}:
+}) { } }:
 let
   buildInputs = with nixpkgs; [ nodejs-16_x libgcc python3Minimal gnumake ];
   name = "some-dev-env";
   shellHook = "";
-in stable.mkShell {
+in nixpkgs.mkShell {
   inherit buildInputs name shellHook;
 }
 ```
