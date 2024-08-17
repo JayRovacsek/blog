@@ -1,3 +1,25 @@
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Publish Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: install
+        uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.19.1
+      - name: build
+        run: zola build
+      - name: upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
 on:
   workflow_run:
     workflows: ["checks"]
@@ -5,16 +27,4 @@ on:
     types:
       - completed
 
-name: Build and deploy GH Pages
-
-jobs:
-  build:
-    name: Publish Site
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-      - name: Build and deploy
-        uses: shalzz/zola-deploy-action@v0.19.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+name: deploy
