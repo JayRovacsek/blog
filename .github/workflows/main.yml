@@ -1,14 +1,18 @@
-on: push
+on:
+  push:
+    branches:
+      - main
+
 name: Build and deploy GH Pages
+
 jobs:
   build:
+    name: Publish Site
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: build_and_deploy
-        uses: shalzz/zola-deploy-action@v0.14.1
+      - name: Checkout main
+        uses: actions/checkout@v4
+      - name: Build and deploy
+        uses: shalzz/zola-deploy-action@v0.19.1
         env:
-          PAGES_BRANCH: gh-pages
-          TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
