@@ -1,29 +1,40 @@
 concurrency:
-  group: "publish"
+  group: "deploy"
   cancel-in-progress: false
 
 jobs:
-  publish:
+  build:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: publish
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: install
         uses: taiki-e/install-action@v2
         with:
           tool: zola@0.19.1
       - name: build
         run: zola build
-      - name: submodule
-        run: git submodule update --init
       - name: upload
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
-name: deploy
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: deploy
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+name: build and deploy
 
 on:
   workflow_run:
@@ -31,3 +42,8 @@ on:
     branches: [main]
     types:
       - completed
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
