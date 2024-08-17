@@ -10,17 +10,18 @@ The answer to this is clear depending on which cloud I am looking to use (spoile
 generally that would be AWS CDK - a neat way to package everything I need (maybe except a single edge-case but
 that might just be a PBKAC issue)
 
-Then I got thinking about the deployment of organisations, as is recommended by everyone when it comes to 
+Then I got thinking about the deployment of organisations, as is recommended by everyone when it comes to
 putting a clear delineation between development, production and root accounts to begin with and AWS accounts.
 I have only skimmed over the surface of setting this up thus far and would love to chase it up sometime over the next week or two but
 from a high level it looks like AWS organisations are going to be easy to setup with terraform.
 
-Looking at the requirements for state, we really want to store tfstate in a S3 bucket; which feels like a fair bit of a 
-chicken and egg situation: 
-* I want to deploy terraform to manage AWS infrastructure
-* Terraform requires state - S3 or local (or others, but lets ignore that)
-* S3 would require an S3 bucket - of which this should not live in a root account
-* Non-root account requires organisation provisioned
+Looking at the requirements for state, we really want to store tfstate in a S3 bucket; which feels like a fair bit of a
+chicken and egg situation:
+
+- I want to deploy terraform to manage AWS infrastructure
+- Terraform requires state - S3 or local (or others, but lets ignore that)
+- S3 would require an S3 bucket - of which this should not live in a root account
+- Non-root account requires organisation provisioned
 
 Yeah...
 
@@ -35,4 +36,4 @@ This'll need to be proved out, but coupling a flake with the [nixos generators](
 repository
 it seems dead easy to do so!
 
-Maybe there'll be a post in a few weeks from me lamenting the journey, or celebrating it's success! 
+Maybe there'll be a post in a few weeks from me lamenting the journey, or celebrating it's success!

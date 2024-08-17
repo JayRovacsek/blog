@@ -7,27 +7,27 @@ tags = ["nix","docker","nix-darwin","launchd"]
 
 {{ resize_image(path="../static/images/docker.png", width=500 height=500 op="fit") }}
 
-Docker is a pretty industry prolific tool that gives users the ability to 
+Docker is a pretty industry prolific tool that gives users the ability to
 be repeatable across environments pretty easily. It's highly ergonomic once setup
-and easy to rationalise with what and how it's doing things once you've skimmed the 
+and easy to rationalise with what and how it's doing things once you've skimmed the
 basic settings, ran a `hello-world` and dipped your toes in proverbial pools.
 
 Recently docker made a shift in the ability to use docker desktop for free when it comes to
 organisations - this freemium style model is... great! Yep - I'm not going to suggest docker
 should continue propping up large businesses with free work produced by awesome people,
-it deserves to be a paid product for the polish applied in both docker desktop and 
+it deserves to be a paid product for the polish applied in both docker desktop and
 dockerhub. While I'd still be militantly against utilising a GUI for docker as `compose` really gives
 you the tools to manage more complex situations well, it is, what it is.
 
-I wanted to use docker on my work machines in a way that lets me both be repeatable and 
+I wanted to use docker on my work machines in a way that lets me both be repeatable and
 repoducable in the output. You _could_ write a shell script that wraps the install of
-the docker client, creates a qemu guest, passes the required sock between guest and host then 
-you'd be off to the races. But this is both a serious rabbit-hole as well as not 
+the docker client, creates a qemu guest, passes the required sock between guest and host then
+you'd be off to the races. But this is both a serious rabbit-hole as well as not
 repoducable by nature (unless you really put the effort in to make it).
 
 {{ resize_image(path="../static/images/DALL·E 2022-08-19 09.45.55 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500  op="fit_width") }}
 
-Enter nix - on nixOS we've got `virtualisation.docker.enable` which is mint! Don't make 
+Enter nix - on nixOS we've got `virtualisation.docker.enable` which is mint! Don't make
 me think about how it's working under the hood and give the ability to use docker, like... pronto.
 On darwin however the option for virtualisation doesn't exist. Not only this but we're not on
 a linux kernel leading to some extra sauce being required to get everything going.
@@ -41,8 +41,8 @@ any number of builds when using flakes.
 
 To ensure we can just use docker at any point I needed to use `launchd` units to manage the spin up
 of colima. There is some hackiness about the way that the launchd unit is defined, but seems like it
-catches the obvious edge-cases I encountered; I wrote a simple extension to options for darwin 
-(though testing if host system is darwin is an assertion I should include on this) and the end-result 
+catches the obvious edge-cases I encountered; I wrote a simple extension to options for darwin
+(though testing if host system is darwin is an assertion I should include on this) and the end-result
 came out as below:
 
 ```nix
@@ -89,8 +89,8 @@ in with lib; {
       # Then check colima status, if default (normal colima namespace with start)
       # has a non-zero exit (i.e not running) start it.
       script = ''
-        ${pkgs.docker}/bin/docker ps -q || ${pkgs.colima}/bin/colima start || pkill -F ~/.lima/colima/qemu.pid 
-        ${pkgs.colima}/bin/colima status -p default || ${pkgs.colima}/bin/colima start default 
+        ${pkgs.docker}/bin/docker ps -q || ${pkgs.colima}/bin/colima start || pkill -F ~/.lima/colima/qemu.pid
+        ${pkgs.colima}/bin/colima status -p default || ${pkgs.colima}/bin/colima start default
       '';
 
       serviceConfig = {
@@ -108,7 +108,7 @@ in with lib; {
 
 The only real rough edge I came across was that launchd kills subprocesses once the parent process exits.
 Now this might just be not spending enough time reading all the options for launchd but the documentation
-of launchd _REALLY_ sucks. The solve for this issue was to add `AbandonProcessGroup` to the 
+of launchd _REALLY_ sucks. The solve for this issue was to add `AbandonProcessGroup` to the
 serviceConfig and launchd stopped killing and reloading docker until infinity.
 
 When [Tweag recently posted the roadmap for nix](https://www.tweag.io/blog/2022-08-04-tweag-and-nix-future/)
@@ -119,7 +119,7 @@ they come out with!
 Yep - I should/could probably create a pull request for the option to be upstream'd into nix-darwin but
 the imposter syndrome is real and my implementation of the service could probably be polished a bit.
 
-As for the awesome artwork DALL-E 2 is generating, a friend generated a token's worth of 
+As for the awesome artwork DALL-E 2 is generating, a friend generated a token's worth of
 images for me to utilise that pretty much has me sold on getting onto using it for
 slick images here. All images but the docker logo on this page are thanks to this
 
