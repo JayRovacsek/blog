@@ -1,10 +1,11 @@
 concurrency:
-  group: "pages"
+  group: "publish"
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Publish Site
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: publish
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -15,6 +16,8 @@ jobs:
           tool: zola@0.19.1
       - name: build
         run: zola build
+      - name: submodule
+        run: git submodule update --init
       - name: upload
         uses: actions/upload-pages-artifact@v3
         with:
@@ -24,7 +27,7 @@ name: deploy
 
 on:
   workflow_run:
-    workflows: ["checks"]
+    workflows: [checks]
     branches: [main]
     types:
       - completed
