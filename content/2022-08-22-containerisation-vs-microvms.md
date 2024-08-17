@@ -1,7 +1,7 @@
 +++
 title = "containerisation vs microvms"
 date = 2022-08-22
-# draft = true
+draft = true
 [taxonomies]
 tags = ["nix","microvm","tailscale","nixos","docker"]
 +++
