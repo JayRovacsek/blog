@@ -11,7 +11,7 @@ with a simple text prompt (and many GB of model).
 On the [22nd of August](https://stability.ai/blog/stable-diffusion-public-release) stable diffusion was
 released also to the public to less fanfare but generating some really
 [damn cool art as shown on the subreddit](https://www.reddit.com/r/StableDiffusion/), it's likely very possible via
-DALL-E 2 to generate images from images but seems the current functionality is centering around text to image.
+DALL-E 2 to generate images from images but seems the current functionality is centring around text to image.
 I toyed with stable diffusion for a while after reading [Xe Iaso's blog post on getting setup on nixos](https://xeiaso.net/blog/stable-diffusion-nixos)
 and got some great, average and bad outputs - the results could be clearly linked to the structure and content of
 textual prompts given to the model so we'll put the bad & average down to PBKAC.
@@ -23,23 +23,23 @@ so likely view this as just a `rant` more than useful content)
 
 > cthulhu on sesame street
 
-{{ resize_image(path="../static/images/cthulhu_on_sesame_street.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/cthulhu_on_sesame_street.png" width={500} height={500} op="fit" /> }}
 
 > samurai black white red anime style
 
-{{ resize_image(path="../static/images/samurai_black_white_red_anime_style.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/samurai_black_white_red_anime_style.png" width={500} height={500} op="fit" /> }}
 
 > windmill in valley studio ghibli style
 
-{{ resize_image(path="../static/images/windmill_in_valley_studio_ghibli_style.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/windmill_in_valley_studio_ghibli_style.png" width={500} height={500} op="fit" /> }}
 
 > beach at dusk oil painting style
 
-{{ resize_image(path="../static/images/beach_at_dusk_oil_painting_style.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/beach_at_dusk_oil_painting_style.png" width={500} height={500} op="fit" /> }}
 
 One of the coolest features of stable diffusion is the image to image function: the below is a montage of 8 generated images and the original (top left)
 
-{{ resize_image(path="../static/images/montage.png", width=1000 height=1000 op="fit") }}
+{{ <resize_image path="../static/images/montage.png" width={1000} height={1000} op="fit" /> }}
 
 People are already doing this; but I can really see an awesome application in speeding up the creative process by using generated images as a base,
 augmenting them manually then possibly reprocessing the image again (take this with a grain of salt - I'm not the creative type, just speculating on good use-cases)

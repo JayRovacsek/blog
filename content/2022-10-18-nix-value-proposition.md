@@ -25,7 +25,7 @@ two technical ideas recently that this also correlated with a rise in attention 
 Fuck yeah both have been bandwagon topics - they rose from relative obscurity to a revered prominence by a small/medium group of almost
 fanatical followers. The meme'y-ness of this is undeniable; [RIIR](https://github.com/ansuz/RIIR) and _I run nixos btw..._ (sorry Arch fans - nix is here to eat your dinner)
 
-{{ resize_image(path="../static/images/arch-vs-nix.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/arch-vs-nix.png" width={500} height={500} op="fit" /> }}
 
 The merit of both of these ideas however is sound,. Rust brings to the table a safer way to write mission critical code, while nix
 brings to the table deterministic, reproducible builds in both an OS and software sense.
@@ -122,9 +122,9 @@ Because of how a nix package requires other nix packages to build we can know th
 those vulnerability management detection and response systems are something we can be extremely close to replicating without paying a kidney a
 year to achieve.
 
-Consider the before mentioned version of nodejs on my system: `16.14.0` - what went into this build? Using [nix-visualize](https://github.com/craigmbooth/nix-visualize) we can generate a neat image depicting a dependency graph:
+Consider the before mentioned version of nodejs on my system: `16.14.0` - what went into this build? Using [a nix dependency visualiser](https://github.com/craigmbooth/nix-visualize) we can generate a neat image depicting a dependency graph:
 
-{{ resize_image(path="../static/images/nodejs-16.14.0-deps.png", width=14400 height=7200 op="fit") }}
+{{ <resize_image path="../static/images/nodejs-16.14.0-deps.png" width={14400} height={7200} op="fit" /> }}
 
 The output of the above is smaller than I'd like but if the image is opened in a new tab it might be more consumable for a viewer. The tldr of it is that we get an explicit set of dependencies that are required for the package meaning we can pull data related to each of these packages from NIST to understand what/if we have vulnerability exposure _ahead_ of time if we are so inclined.
 
@@ -134,7 +134,7 @@ This is not just for packages - as a system's configuration is a derivation that
 dependencies and those dependencies likely dependencies; we can understand if our current system is weak to flaws, if our build/runtime dependencies are weak to flaws
 and extend this out to understand if we update a system, is it still vulnerable to these issues.
 
-{{ resize_image(path="../static/images/seed_207087_00006.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/seed_207087_00006.png" width={500} height={500} op="fit" /> }}
 A pointless Stable Diffusion generated muppet image.
 
 # I'm Getting Tired

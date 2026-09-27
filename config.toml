@@ -4,15 +4,13 @@ compile_sass = true
 build_search_index = true
 hard_link_static = true
 
-taxonomies = [
-    {name = "tags", feed = true},
-]
+taxonomies = [{ name = "tags", feed = true }]
 
-[markdown]
-highlight_code = true
+[markdown.highlighting]
+theme = "one-dark-pro"
 
 [extra]
 after_dark_menu = [
-    {url = "$BASE_URL", name = "home"},
-    {url = "$BASE_URL/tags", name = "tags"},
+    { url = "$BASE_URL", name = "home" },
+    { url = "$BASE_URL/tags", name = "tags" },
 ]

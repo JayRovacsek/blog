@@ -25,7 +25,7 @@ repository, it was able to save me from rebuilding much of an
 understanding of the require run configuration from a container
 perspective.
 
-{{ resize_image(path="../static/images/teleport-ore.jpg", width=1200 height=1159 op="fit") }}
+{{ <resize_image path="../static/images/teleport-ore.jpg" width={1200} height={1159} op="fit" /> }}
 
 # server build
 
@@ -221,4 +221,4 @@ garbage collect will delete it: hence the codification of the
 package within a configuration file would ensure this doesn't cause
 issue later.
 
-{{ resize_image(path="../static/images/troll-mining.jpg", width=609 height=500 op="fit") }}
+{{ <resize_image path="../static/images/troll-mining.jpg" width={609} height={500} op="fit" /> }}

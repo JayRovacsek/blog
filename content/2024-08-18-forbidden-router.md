@@ -36,11 +36,11 @@ Building this configuration as a microvm would be an achievemnent, enabling the 
 office at the cost of complexity in technical space. Level1Techs did a few awesome pieces on the boons
 and pitfalls of forbidden routers not too long ago:
 
-{{ youtube(id="r9fWuT5Io5Q") }}
+{{ <youtube id="r9fWuT5Io5Q" /> }}
 
-{{ youtube(id="MBY_QNN3owc") }}
+{{ <youtube id="MBY_QNN3owc" /> }}
 
-{{ youtube(id="x40FlIyhYXU") }}
+{{ <youtube id="x40FlIyhYXU" /> }}
 
 There's even a reasonably mature space of people utilising nixos to represent their routers within Github,
 plus an awesome initiative to [enable routers via a framework](https://github.com/chayleaf/nixos-router)!
@@ -57,4 +57,4 @@ via a defined gateway, simply to broker overlay connectivity for internal reacha
 
 There's no conclusion to this brain dump, beyond **wouldn't it be nice**!
 
-{{ resize_image(path="../static/images/field.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/field.png" width={500} height={500} op="fit" /> }}

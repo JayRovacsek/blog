@@ -5,7 +5,7 @@ date = 2022-08-19
 tags = ["nix","docker","nix-darwin","launchd"]
 +++
 
-{{ resize_image(path="../static/images/docker.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/docker.png" width={500} height={500} op="fit" /> }}
 
 Docker is a pretty industry prolific tool that gives users the ability to
 be repeatable across environments pretty easily. It's highly ergonomic once setup
@@ -25,7 +25,7 @@ the docker client, creates a qemu guest, passes the required sock between guest 
 you'd be off to the races. But this is both a serious rabbit-hole as well as not
 repoducable by nature (unless you really put the effort in to make it).
 
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.45.55 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500  op="fit_width") }}
+{{ <resize_image path="../static/images/DALL·E 2022-08-19 09.45.55 - a whale with shipping containers on its back flying through space with a rainbow digital art.png" width={500} height={500} op="fit_width" /> }}
 
 Enter nix - on nixOS we've got `virtualisation.docker.enable` which is mint! Don't make
 me think about how it's working under the hood and give the ability to use docker, like... pronto.
@@ -37,7 +37,7 @@ and gives us a default of "hey - just run the dockers", it's available in a few 
 but best of all: in `nixpkgs` meaning we can either pin or be certain of current version across
 any number of builds when using flakes.
 
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit_width") }}
+{{ <resize_image path="../static/images/DALL·E 2022-08-19 09.46.03 - a whale with shipping containers on its back flying through space with a rainbow digital art.png" width={500} height={500} op="fit_width" /> }}
 
 To ensure we can just use docker at any point I needed to use `launchd` units to manage the spin up
 of colima. There is some hackiness about the way that the launchd unit is defined, but seems like it
@@ -123,6 +123,6 @@ As for the awesome artwork DALL-E 2 is generating, a friend generated a token's 
 images for me to utilise that pretty much has me sold on getting onto using it for
 slick images here. All images but the docker logo on this page are thanks to this
 
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.45.59 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/DALL·E 2022-08-19 09.45.59 - a whale with shipping containers on its back flying through space with a rainbow digital art.png" width={500} height={500} op="fit" /> }}
 &nbsp;
-{{ resize_image(path="../static/images/DALL·E 2022-08-19 09.46.07 - a whale with shipping containers on its back flying through space with a rainbow digital art.png", width=500 height=500 op="fit") }}
+{{ <resize_image path="../static/images/DALL·E 2022-08-19 09.46.07 - a whale with shipping containers on its back flying through space with a rainbow digital art.png" width={500} height={500} op="fit" /> }}
