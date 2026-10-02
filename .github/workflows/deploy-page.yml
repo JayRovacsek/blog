@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           submodules: true
       - name: install
         uses: taiki-e/install-action@v2
         with:
-          tool: zola@0.19.1
+          tool: zola@0.23.6
       - name: build
         run: zola build
       - name: upload

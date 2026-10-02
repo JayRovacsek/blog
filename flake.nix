@@ -17,7 +17,7 @@
       url = "github:cachix/git-hooks.nix";
     };
 
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     systems.url = "github:nix-systems/default";
   };
@@ -63,7 +63,8 @@
                 enable = true;
                 settings = {
                   binary = false;
-                  ignored-words = [ ];
+                  exclude = [ "LICENSE" ];
+                  ignored-words = [ "visualize" ];
                   locale = "en-au";
                 };
               };
@@ -78,9 +79,9 @@
               };
 
               trufflehog-verified = {
-                enable = pkgs.stdenv.isLinux;
+                enable = true;
                 name = "Trufflehog Search";
-                entry = "${pkgs.trufflehog}/bin/trufflehog git file://. --since-commit HEAD --only-verified --fail --no-update";
+                entry = "${pkgs.trufflehog}/bin/trufflehog git file://. --since-commit HEAD --only-verified --fail";
                 language = "system";
                 pass_filenames = false;
               };
@@ -92,37 +93,45 @@
 
           devshell = {
             startup.git-hooks.text = self.checks.${system}.git-hooks.shellHook;
-
-            interactive.shell.text = ''
-              ${pkgs.git}/bin/git submodule update --init
-              port_used=$(${pkgs.lsof}/bin/lsof -i -P -n | ${pkgs.gnugrep}/bin/grep LISTEN | grep 8080 | ${pkgs.coreutils}/bin/wc -l)
-              if [ $port_used -eq 1 ]
-              then
-                echo "Port 8080 appears to be in use, not starting zola"  
-              else
-                ${pkgs.coreutils}/bin/rm -rf ./public
-                ${pkgs.zola}/bin/zola serve --port 8080
-              fi
-            '';
           };
+
+          commands = [
+            {
+              name = "run-page";
+              help = "updates submodules, checks if port 8080 is in use, then runs zola if possible";
+              command = ''
+                ${pkgs.git}/bin/git submodule update --init
+                port_used=$(${pkgs.lsof}/bin/lsof -i -P -n | ${pkgs.gnugrep}/bin/grep LISTEN | grep 8080 | ${pkgs.coreutils}/bin/wc -l)
+                if [ $port_used -eq 1 ]
+                then
+                  echo "Port 8080 appears to be in use, not starting zola"  
+                else
+                  ${pkgs.coreutils}/bin/rm -rf ./public
+                  ${pkgs.zola}/bin/zola serve --port 8080
+                fi
+              '';
+            }
+          ];
 
           name = "blog shell";
 
-          packages = with pkgs; [
-            actionlint
-            conform
-            deadnix
-            git
-            git-cliff
-            lsof
-            nixfmt-rfc-style
-            nodePackages.prettier
-            statix
-            statix
-            trufflehog
-            typos
-            zola
-          ];
+          packages =
+            (with pkgs; [
+              actionlint
+              conform
+              deadnix
+              git
+              git-cliff
+              lsof
+              nixfmt-rfc-style
+              prettier
+              statix
+              statix
+              trufflehog
+              typos
+              zola
+            ])
+            ++ self.checks.${system}.git-hooks.enabledPackages;
         };
 
         formatter = pkgs.nixfmt-rfc-style;
