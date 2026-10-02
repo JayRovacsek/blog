@@ -63,6 +63,7 @@
                 enable = true;
                 settings = {
                   binary = false;
+                  exclude = [ "LICENSE" ];
                   ignored-words = [ "visualize" ];
                   locale = "en-au";
                 };
