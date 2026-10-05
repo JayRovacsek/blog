@@ -19,7 +19,7 @@ jobs:
       - name: build
         run: zola build
       - name: upload
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: ./public
 
